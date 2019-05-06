@@ -19,8 +19,8 @@ targets: [
 ## 使用 
 
 ```
-let auth = Auth.create(accessKey: "d05f31DhWMuCdnqYLmEHOxxxxx4rQ5dpnPJGB4F", secretKey: "q6l7YgfxOAVGSR8U5_DwButyC5133_urgBGyjIHt")
-let token = auth.uploadToken(bucket: "picture")
+let auth = Auth.create(accessKey: "xxx", secretKey: "xxx")
+let token = auth.uploadToken(bucket: "xxx")
 print(token)
 ```
 
