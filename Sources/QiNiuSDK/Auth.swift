@@ -54,7 +54,7 @@ public final class Auth {
         self.secretKey = secretKey
     }
     
-    static func create(accessKey: String, secretKey: String) -> Auth {
+    public static func create(accessKey: String, secretKey: String) -> Auth {
         guard !accessKey.isEmpty && !secretKey.isEmpty else {
             fatalError("`accessKey` or `secretKey` is empty")
         }
@@ -82,7 +82,7 @@ public final class Auth {
      * @param bucket 空间名
      * @return 生成的上传token
      */
-    func uploadToken(bucket: String) -> String {
+    public func uploadToken(bucket: String) -> String {
         return uploadToken(bucket: bucket, key: "", expires: 3600, policy: [:], strict: true)
     }
     
@@ -94,7 +94,7 @@ public final class Auth {
      * @param key    key，可为 null
      * @return 生成的上传token
      */
-    func uploadToken(bucket: String, key: String) -> String {
+    public func uploadToken(bucket: String, key: String) -> String {
         return uploadToken(bucket: bucket, key: key, expires: 3600, policy: [:], strict: true)
     }
     
@@ -108,7 +108,7 @@ public final class Auth {
      *                scope通过 bucket、key间接设置，deadline 通过 expires 间接设置
      * @return 生成的上传token
      */
-    func uploadToken(bucket: String, key: String, expires: UInt, policy: [String: Any]) -> String {
+    public func uploadToken(bucket: String, key: String, expires: UInt, policy: [String: Any]) -> String {
         return uploadToken(bucket: bucket, key: key, expires: expires, policy: policy, strict: true)
     }
     
