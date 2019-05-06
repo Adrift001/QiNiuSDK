@@ -23,7 +23,9 @@ public class Auth {
             let encodedPutPolicy = Base64FS.encodeString(str: putPolicy)
             
             // 参考:http://m.hangge.com/news/cache/detail_1867.html
-            let encodedSign = try HMAC(key: QiNiuSDK.secretKey.bytes, variant: .sha1).authenticate(encodedPutPolicy.bytes).toBase64() ?? ""
+            let sign = try HMAC(key: QiNiuSDK.secretKey.bytes, variant: .sha1).authenticate(encodedPutPolicy.bytes)
+            
+            let encodedSign = String(bytes: Base64FS.encode(data: sign), encoding: .utf8) ?? ""
             
             let uploadToken = "\(QiNiuSDK.accessKey):\(encodedSign):\(encodedPutPolicy)"
             return uploadToken
