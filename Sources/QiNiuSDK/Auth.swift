@@ -9,7 +9,7 @@ import Foundation
 import CryptoSwift
 
 public class Auth {
-
+    
     /// 创建上传凭证
     ///
     /// - Returns: 上传凭证

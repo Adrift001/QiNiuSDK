@@ -8,6 +8,6 @@
 import Foundation
 
 class UploadStrategy: Codable {
-    var scope = "blog-pic"
+    var scope = "blog-pic" //设置bucket
     var deadline: UInt = UInt(Date(timeIntervalSinceNow: 3600).timeIntervalSince1970)
 }
