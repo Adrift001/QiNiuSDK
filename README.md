@@ -6,7 +6,7 @@
 
 ```
 dependencies: [
-    .package(url: "https://github.com/Adrift001/QiNiuSDK.git", from: "0.0.1")
+    .package(url: "https://github.com/Adrift001/QiNiuSDK.git", from: "0.0.2")
 ]
 ```
 
