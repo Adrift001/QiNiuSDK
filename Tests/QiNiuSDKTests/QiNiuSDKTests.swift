@@ -7,11 +7,11 @@ final class QiNiuSDKTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(QiNiuSDK().text, "Hello, World!")
     }
     
     func testUploadToken() {
-        let token = Auth.createToken()
+        let auth = Auth.create(accessKey: "xxx", secretKey: "xxx")
+        let token = auth.uploadToken(bucket: "picture")
         print(token)
     }
 
