@@ -10,6 +10,12 @@ dependencies: [
 ]
 ```
 
+```
+targets: [
+    .target(name: "App", dependencies: ["QiNiuSDK"]),
+]
+```
+
 ## 使用 
 
 ```
