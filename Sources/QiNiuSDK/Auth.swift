@@ -5,7 +5,6 @@
 //  Created by 荆学涛 on 2019/5/6.
 //
 
-import Foundation
 import CryptoSwift
 
 public final class Auth {

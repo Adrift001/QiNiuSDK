@@ -5,8 +5,6 @@
 //  Created by 荆学涛 on 2019/5/6.
 //
 
-import Foundation
-
 public class Base64FS {
     
     private static let padding: UInt8 = 61 // Padding = "="
