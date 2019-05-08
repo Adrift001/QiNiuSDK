@@ -8,21 +8,20 @@
 public final class AutoZone: Zone {
     public static let instance = AutoZone()
     private let ucServer: String = ""
+    private let zones: [ZoneIndex: ZoneInfo] = [:]
     
     class UCRet {
         var http: Dictionary<String, [String]> = [:]
         var https: Dictionary<String, [String]> = [:]
     }
     
-    class ZoneIndex {
+    struct ZoneIndex: Hashable {
         let accessKey: String
         let bucket: String
         
         init(accessKey: String, bucket: String) {
             self.accessKey = accessKey
             self.bucket = bucket
-            var rc = UCRet()
-            rc.http[""] = [""]
         }
     }
     
