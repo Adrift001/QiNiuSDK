@@ -58,7 +58,7 @@ jobs:
     - swift package update
     - swift test
   # The second stage will run all tests on macOS
-  - stage: OSX
+  - stage: macOS
     os: osx
     osx_image: xcode11
     language: swift
