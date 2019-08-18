@@ -37,7 +37,7 @@ public class Provider<Target: TargetType>: ProviderType {
     
     func request(_ target: Target, completion: (Result<HTTPClient.Response, ProviderError>) -> Void) {
         do {
-            let request = try HTTPClient.Request(url: target.baseURL.appendingPathComponent(target.path), method: target.method)
+            let request = try HTTPClient.Request(url: URL(target: target), method: target.method)
             client.execute(request: request).whenComplete { (result) in
                 switch result {
                 case .success(let response):
