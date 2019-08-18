@@ -25,7 +25,7 @@ jobs:
     - mkdir swift
     - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1604/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu16.04.tar.gz
       -s | tar xz -C swift &> /dev/null
-    - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
+    - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu16.04/usr/bin:$PATH"
     script:
     - swift package update
     - swift test
