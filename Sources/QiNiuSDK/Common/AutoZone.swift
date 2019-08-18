@@ -7,8 +7,9 @@
 
 public final class AutoZone: Zone {
     public static let instance = AutoZone()
-    private let ucServer: String = ""
-    private let zones: [ZoneIndex: ZoneInfo] = [:]
+    private var ucServer: String = ""
+    private var zones: [ZoneIndex: ZoneInfo] = [:]
+    private var inferDomainsMap: [String: Zone] = [:]
     
     class UCRet {
         var http: Dictionary<String, [String]> = [:]
