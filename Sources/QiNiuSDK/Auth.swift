@@ -108,4 +108,17 @@ public final class Auth {
             return ""
         }
     }
+    
+    public static func accessToken(path: String) -> String  {
+        do {
+            // 参考:http://m.hangge.com/news/cache/detail_1867.html
+            let sign = try HMAC(key: Keys.secretKey.bytes, variant: .sha1).authenticate(path.bytes)
+            let encodedSign = String(bytes: Base64FS.encode(data: sign), encoding: .utf8) ?? ""
+            let accessToken = "\(Keys.accessKey):\(encodedSign)"
+            return accessToken
+        } catch {
+            return ""
+        }
+        return ""
+    }
 }
