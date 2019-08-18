@@ -15,10 +15,24 @@ env:
 jobs:
   include:
   # The first stage will run all unit tests using Ubuntu
-  - stage: Linux test
+  - stage: Ubuntu Trusty 14.04
     os: linux
-    language: generic
+    language: swift
     dist: trusty
+    sudo: required
+    install:
+    - sudo apt-get install clang libicu-dev
+    - mkdir swift
+    - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz
+      -s | tar xz -C swift &> /dev/null
+    - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu16.04/usr/bin:$PATH"
+    script:
+    - swift package update
+    - swift test
+  - stage: Ubuntu Xenial 16.04
+    os: linux
+    language: swift
+    dist: xenial
     sudo: required
     install:
     - sudo apt-get install clang libicu-dev
@@ -29,8 +43,22 @@ jobs:
     script:
     - swift package update
     - swift test
+  - stage: Ubuntu Bionic 18.04
+    os: linux
+    language: swift
+    dist: bionic
+    sudo: required
+    install:
+    - sudo apt-get install clang libicu-dev
+    - mkdir swift
+    - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1804/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu18.04.tar.gz
+      -s | tar xz -C swift &> /dev/null
+    - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu16.04/usr/bin:$PATH"
+    script:
+    - swift package update
+    - swift test
   # The second stage will run all tests on macOS
-  - stage: OSX test
+  - stage: OSX
     os: osx
     osx_image: xcode11
     language: swift
