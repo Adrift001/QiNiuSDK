@@ -5,6 +5,8 @@ final class QiNiuSDKTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
+        Keys.accessKey = ""
+        Keys.secretKey = ""
     }
     
     func testExample() {

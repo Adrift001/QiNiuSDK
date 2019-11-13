@@ -119,6 +119,5 @@ public final class Auth {
         } catch {
             return ""
         }
-        return ""
     }
 }

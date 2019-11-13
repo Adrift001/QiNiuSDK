@@ -7,6 +7,7 @@
 
 import Foundation
 import NIOHTTP1
+import NIO
 
 public protocol TargetType {
     var baseURL: URL { get }

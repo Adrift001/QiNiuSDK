@@ -11,6 +11,8 @@ public extension EventLoopFuture where Value == HTTPClient.Response {
     func mapArray<T: Codable>(_ type: T.Type) -> EventLoopFuture<[Codable]> {
         return self.map { (response) -> ([Codable]) in
             if var body = response.body, let data = (body.readString(length: body.readableBytes) ?? "").data(using: .utf8) {
+                QiNiuSDKLogger.default.info("\(response.headers.description)")
+                QiNiuSDKLogger.default.info("\(String(data: data, encoding: .utf8))")
                 let decoder = JSONDecoder()
                 do {
                     let array = try decoder.decode([String].self, from: data)

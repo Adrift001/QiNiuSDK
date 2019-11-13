@@ -26,11 +26,11 @@ extension ProviderError {
     }
 }
 
-public typealias Completion = ((_ result: Result<HTTPClient.Response, ProviderError>) -> Void)
+public typealias Completion = ((_ result: Result<Response, ProviderError>) -> Void)
 
 protocol ProviderType: AnyObject {
     associatedtype Target: TargetType
-    func request(_ target: Target) -> EventLoopFuture<HTTPClient.Response>
+    func request(_ target: Target) -> EventLoopFuture<Response>
 }
 
 public class Provider<Target: TargetType>: ProviderType {
@@ -42,12 +42,18 @@ public class Provider<Target: TargetType>: ProviderType {
     }
     
     @discardableResult
-    func request(_ target: Target) -> EventLoopFuture<HTTPClient.Response> {
-        var request = try! HTTPClient.Request(url: URL(target: target), method: target.method)
-        request.headers.add(name: "Authorization", value: "QBox \(Auth.accessToken(path: "/\(target.path)\n"))")
-        request.headers.add(name: "Content-Type", value: "application/x-www-form-urlencoded")
+    func request(_ target: Target) -> EventLoopFuture<Response> {
+        let request = try! Request(target: target)
         let task = client.execute(request: request)
         return task
+    }
+    
+    deinit {
+        do {
+            try client.syncShutdown()
+        } catch {
+            QiNiuSDKLogger.default.error("client.syncShutdown error")
+        }
     }
 }
 

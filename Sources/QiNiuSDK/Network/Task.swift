@@ -7,6 +7,11 @@
 //  From Moya: https://github.com/Moya/Moya/blob/master/Sources/Moya/Task.swift
 import Foundation
 
+public enum Encoding {
+    case queryString
+    case json
+}
+
 /// Represents an HTTP task.
 public enum Task {
 
@@ -14,5 +19,5 @@ public enum Task {
     case requestPlain
 
     /// A requests body set with encoded parameters.
-    case requestParameters(parameters: [String: Any])
+    case requestParameters(parameters: [String: Any], encoding: Encoding)
 }
