@@ -16,8 +16,6 @@ final class ServiceTests: XCTestCase {
     let timeout: TimeInterval = 5
     override func setUp() {
         super.setUp()
-        Keys.accessKey = ""
-        Keys.secretKey = ""
     }
     
     func testBuckets() throws {
@@ -37,7 +35,7 @@ final class ServiceTests: XCTestCase {
     func testBucketSpaceDomainName() throws {
 //        ["blog-video", "blog-music", "blog-pic", "blog"]
         let provider = Provider<QiNiuProvider>()
-        let task = provider.request(.bucketSpaceDomainName("blog-video"))
+        let task = provider.request(.bucketSpaceDomainName("blog-pic"))
         task.mapArray([String].self).whenComplete { (result) in
             switch result {
             case .success(let arr):
@@ -50,9 +48,8 @@ final class ServiceTests: XCTestCase {
     }
     
         func testCreateBucket() throws {
-    //        ["blog-video", "blog-music", "blog-pic", "blog"]
             let provider = Provider<QiNiuProvider>()
-            let task = provider.request(.createBucket("test1", .z0))
+            let task = provider.request(.createBucket("jingxuetao-hello", .z0))
             task.mapArray(String.self).whenComplete { (result) in
                 switch result {
                 case .success(let string):

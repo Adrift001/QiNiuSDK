@@ -10,7 +10,7 @@ public enum QiNiuProvider {
     case buckets
     /// 获取 Bucket 空间域名
     case bucketSpaceDomainName(String)
-    /// 创建 Bucket
+    /// 创建 Bucket, 空间名称,地区 (空间名称不能有下划线,可以用中划线)
     case createBucket(String, Region)
 }
 
@@ -64,7 +64,6 @@ extension QiNiuProvider {
     func defaultHeaders() -> [String: String] {
         return [
             "User-Agent": "QiNiuSDK",
-            "Authorization": "QBox \(Auth.accessToken(path: "/\(path)\n"))",
             "Content-Type": "application/x-www-form-urlencoded"
         ]
     }

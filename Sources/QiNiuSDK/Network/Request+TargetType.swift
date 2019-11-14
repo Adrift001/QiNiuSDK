@@ -16,9 +16,11 @@ public extension Request {
             }
             QiNiuSDKLogger.default.log(level: .info, "\(headers.description)")
         }
+        var path = ""
         switch target.task {
         case .requestPlain:
             let url = URL(target: target)
+            path = target.path
             QiNiuSDKLogger.default.info("\(url.absoluteString)")
             try self.init(url: url, method: target.method, headers: headers)
         case .requestParameters(let parameters, let encoding):
@@ -26,6 +28,7 @@ public extension Request {
             case .json:
                 let body = Body.string(parameters.toJSONString())
                 let url = URL(target: target)
+                path = target.path
                 QiNiuSDKLogger.default.info("\(url.absoluteString)")
                 try self.init(url: url, method: target.method, headers: headers, body: body)
             case .queryString:
@@ -36,9 +39,17 @@ public extension Request {
                 }
                 urlString += queryString
                 let url = URL(string: urlString)!
+                path = target.path + "?" + queryString
                 QiNiuSDKLogger.default.info("\(url.absoluteString)")
                 try self.init(url: url, method: target.method, headers: headers)
             }
         }
+        print("=======================")
+        print("=======================")
+        print(path)
+        print("=======================")
+        print("=======================")
+//        "Authorization": "QBox \(Auth.accessToken(path: "/\(path)\n"))",
+        self.headers.add(name: "Authorization", value: "QBox \(Auth.accessToken(path: "/\(path)\n"))")
     }
 }
