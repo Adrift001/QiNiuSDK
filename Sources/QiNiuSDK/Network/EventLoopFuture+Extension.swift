@@ -8,40 +8,22 @@
 import NIO
 
 public extension EventLoopFuture where Value == Response {
-    func mapArray<T: Codable>(_ type: T.Type) -> EventLoopFuture<[Codable]> {
-        return self.map { (response) -> ([Codable]) in
+    func mapCodable<T: Codable>(_ type: T.Type) -> EventLoopFuture<T> {
+        return self.flatMapResult { (response) -> Result<T, QiNiuError> in
             if var body = response.body, let data = (body.readString(length: body.readableBytes) ?? "").data(using: .utf8) {
                 QiNiuSDKLogger.default.info("\(response.headers.description)")
                 QiNiuSDKLogger.default.info("\(String(data: data, encoding: .utf8) ?? "")")
                 let decoder = JSONDecoder()
                 do {
-                    let array = try decoder.decode([T].self, from: data)
-                    return array
+                    let array = try decoder.decode(T.self, from: data)
+                    return .success(array)
                 } catch {
-                    return []
+                    print(error)
+                    return .failure(QiNiuError.decodeFailed)
                 }
             } else {
-                return []
+                return .failure(QiNiuError.bodyEmpty)
             }
-        }
-    }
-    
-    func mapObject<T: Codable>(_ type: T.Type) -> EventLoopFuture<Codable> {
-        return self.map { (response) -> (Codable) in
-            if var body = response.body, let data = (body.readString(length: body.readableBytes) ?? "").data(using: .utf8) {
-                QiNiuSDKLogger.default.info("\(response.headers.description)")
-                QiNiuSDKLogger.default.info("\(String(data: data, encoding: .utf8) ?? "")")
-                let decoder = JSONDecoder()
-                do {
-                    let object = try decoder.decode(T.self, from: data)
-                    return object
-                } catch {
-                    
-                }
-            } else {
-                
-            }
-            fatalError("")
         }
     }
 }

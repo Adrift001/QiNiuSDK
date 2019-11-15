@@ -35,15 +35,32 @@ protocol ProviderType: AnyObject {
 
 public class Provider<Target: TargetType>: ProviderType {
     
+    public typealias Response = HTTPClient.Response
+    
+    
+    public typealias EndpointClosure = (Target) -> Endpoint
+    public typealias RequestResultClosure = (Result<Request, QiNiuError>) -> Void
+    public typealias RequestClosure = (Endpoint, @escaping RequestResultClosure) -> Void
+    
+    public let endpointClosure: EndpointClosure
+    public let plugins: [PluginType]
     public let client: HTTPClient
     
-    init(client: HTTPClient = Provider.defaultHTTPClient()) {
+    init(endpointClosure: @escaping EndpointClosure = Provider.defaultEndpointMapping, plugins: [PluginType] = [], client: HTTPClient = Provider.defaultHTTPClient()) {
+        self.endpointClosure = endpointClosure
+        self.plugins = plugins
         self.client = client
     }
     
+    open func endpoint(_ token: Target) -> Endpoint {
+        return endpointClosure(token)
+    }
+    
     @discardableResult
-    func request(_ target: Target) -> EventLoopFuture<Response> {
-        let request = try! Request(target: target)
+    public func request(_ target: Target) -> EventLoopFuture<Response>  {
+        let endpoint = self.endpoint(target)
+        let request = try! endpoint.urlRequest()
+        plugins.forEach { $0.willSend(request, target: target) }
         let task = client.execute(request: request)
         return task
     }
@@ -60,5 +77,14 @@ public class Provider<Target: TargetType>: ProviderType {
 public extension Provider {
     final class func defaultHTTPClient() -> HTTPClient {
         return HTTPClient(eventLoopGroupProvider: .shared(MultiThreadedEventLoopGroup(numberOfThreads: 10)))
+    }
+    
+    final class func defaultEndpointMapping(for target: Target) -> Endpoint {
+        return Endpoint(
+            url: URL(target: target).absoluteString,
+            method: target.method,
+            task: target.task,
+            httpHeaderFields: target.headers
+        )
     }
 }

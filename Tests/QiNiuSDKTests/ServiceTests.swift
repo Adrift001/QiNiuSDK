@@ -16,12 +16,13 @@ final class ServiceTests: XCTestCase {
     let timeout: TimeInterval = 5
     override func setUp() {
         super.setUp()
+        
     }
     
     func testBuckets() throws {
         let provider = Provider<QiNiuProvider>()
         let task = provider.request(.buckets)
-        task.mapArray([String].self).whenComplete { (result) in
+        task.mapCodable([String].self).whenComplete { (result) in
             switch result {
             case .success(let arr):
                 print(arr)
@@ -36,7 +37,7 @@ final class ServiceTests: XCTestCase {
 //        ["blog-video", "blog-music", "blog-pic", "blog"]
         let provider = Provider<QiNiuProvider>()
         let task = provider.request(.bucketSpaceDomainName("blog-pic"))
-        task.mapArray([String].self).whenComplete { (result) in
+        task.mapCodable([String].self).whenComplete { (result) in
             switch result {
             case .success(let arr):
                 print(arr)
@@ -47,17 +48,62 @@ final class ServiceTests: XCTestCase {
         try task.wait()
     }
     
-        func testCreateBucket() throws {
-            let provider = Provider<QiNiuProvider>()
-            let task = provider.request(.createBucket("jingxuetao-hello", .z0))
-            task.mapArray(String.self).whenComplete { (result) in
-                switch result {
-                case .success(let string):
-                    print(string)
-                case .failure(let error):
-                    print(error)
-                }
+    func testCreateBucket() throws {
+        let provider = Provider<QiNiuProvider>()
+        let task = provider.request(.createBucket("jingxuetao-hello", .z0))
+        task.mapCodable(String.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
             }
-            try task.wait()
         }
+        try task.wait()
+    }
+    
+    func testDeleteBucket() throws {
+        let provider = Provider<QiNiuProvider>()
+        let task = provider.request(.deleteBucket("jingxuetao-hello"))
+        task.mapCodable(EmptyModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
+    func testSetBucketAccess() throws {
+        let provider = Provider<QiNiuProvider>()
+        let task = provider.request(.setBucketAccess("jingxuetao-hello", .private))
+        task.mapCodable(EmptyModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
+    func testSetBucketTags() throws {
+        let provider = Provider<QiNiuProvider>()
+        
+        let task = provider.request(.setBucketTags("jingxuetao-hello", BucketTagsModel(Tags: [BucketTagModel(Key: "key1", Value: "value1")])))
+        task.mapCodable(EmptyModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
+    
 }
