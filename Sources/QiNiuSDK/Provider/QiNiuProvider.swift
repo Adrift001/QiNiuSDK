@@ -18,6 +18,10 @@ public enum QiNiuProvider {
     case setBucketAccess(String, BucketAccess)
     /// 设置空间标签
     case setBucketTags(String, BucketTagsModel)
+    /// 查询空间标签
+    case queryBucketTags(String)
+    /// 删除空间标签
+    case deleteBucketTags(String)
 }
 
 extension QiNiuProvider: TargetType {
@@ -29,7 +33,7 @@ extension QiNiuProvider: TargetType {
             return URL(string: "https://api.qiniu.com/")!
         case .createBucket, .deleteBucket:
             return URL(string: "https://rs.qiniu.com")!
-        case .setBucketAccess, .setBucketTags:
+        case .setBucketAccess, .setBucketTags, .queryBucketTags, .deleteBucketTags:
             return URL(string: "https://uc.qbox.me")!
         }
     }
@@ -48,6 +52,8 @@ extension QiNiuProvider: TargetType {
             return "private"
         case .setBucketTags(let bucketName, _):
             return "bucketTagging?bucket=\(bucketName)"
+        case .queryBucketTags, .deleteBucketTags:
+            return "bucketTagging"
         }
     }
     
@@ -55,10 +61,12 @@ extension QiNiuProvider: TargetType {
         switch self {
         case .buckets, .createBucket, .deleteBucket, .setBucketAccess:
             return .POST
-        case .bucketSpaceDomainName:
+        case .bucketSpaceDomainName, .queryBucketTags:
             return .GET
         case .setBucketTags:
             return .PUT
+        case .deleteBucketTags:
+            return .DELETE
         }
     }
     
@@ -72,6 +80,8 @@ extension QiNiuProvider: TargetType {
             return .requestParameters(parameters: ["bucket": bucketName, "private": access.rawValue], encoding: URLEncoding.queryString)
         case .setBucketTags(_, let tags):
             return .requestJSONEncodable(tags)
+        case .queryBucketTags(let bucketName), .deleteBucketTags(let bucketName):
+            return .requestParameters(parameters: ["bucket": bucketName], encoding: URLEncoding.queryString)
         }
     }
     

@@ -105,5 +105,35 @@ final class ServiceTests: XCTestCase {
         try task.wait()
     }
     
+    func testQueryBucketTags() throws {
+        let provider = Provider<QiNiuProvider>()
+        
+        let task = provider.request(.queryBucketTags("jingxuetao-hello"))
+        task.mapCodable(BucketTagsModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
+    func testDeleteBucketTags() throws {
+        let provider = Provider<QiNiuProvider>()
+        
+        let task = provider.request(.deleteBucketTags("jingxuetao-hello"))
+        task.mapCodable(EmptyModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
     
 }
