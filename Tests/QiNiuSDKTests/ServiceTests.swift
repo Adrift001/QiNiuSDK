@@ -16,7 +16,7 @@ final class ServiceTests: XCTestCase {
     let timeout: TimeInterval = 5
     override func setUp() {
         super.setUp()
-        
+
     }
     
     func testBuckets() throws {
@@ -133,6 +133,101 @@ final class ServiceTests: XCTestCase {
             }
         }
         try task.wait()
+    }
+    
+    func testUpdateFileStatus() throws {
+        let provider = Provider<QiNiuProvider>()
+        
+        let task = provider.request(.updateFileStatus("blog-pic", "1.png", .disable))
+        task.mapCodable(EmptyModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
+    func testUpdateFileStoreType() throws {
+        let provider = Provider<QiNiuProvider>()
+        
+        let task = provider.request(.updateFileStoreType("blog-pic", "1.png", .low))
+        task.mapCodable(EmptyModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
+    func testUpdateFileLife() throws {
+        let provider = Provider<QiNiuProvider>()
+        
+        let task = provider.request(.updateFileLife("blog-pic", "1.png", 100))
+        task.mapCodable(EmptyModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
+    func testUpdateFileInfo() throws {
+        let provider = Provider<QiNiuProvider>()
+        
+        let task = provider.request(.queryFileMetaInfo("blog-pic", "1.png"))
+        task.mapCodable(FileInfo.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
+    func testRenameFile() throws {
+        let provider = Provider<QiNiuProvider>()
+        
+        let task = provider.request(.renameFile("blog-pic", "1.png", "blog-pic", "1111111111.png", true))
+        task.mapCodable(FileInfo.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
+    func testPrefetchFile() throws {
+        let provider = Provider<QiNiuProvider>()
+        
+        let task = provider.request(.prefetchFile("blog-pic", "1111111111.png"))
+        task.mapCodable(EmptyModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
+    func testAuth() throws {
+        let str = Base64FS.encodeString(str: "qiniuphotos:gogopher.jpg")
+        print(str)
     }
     
     

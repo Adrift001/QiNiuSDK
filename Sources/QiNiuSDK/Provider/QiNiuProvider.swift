@@ -22,6 +22,35 @@ public enum QiNiuProvider {
     case queryBucketTags(String)
     /// 删除空间标签
     case deleteBucketTags(String)
+    
+    /// 修改文件状态
+    case updateFileStatus(String, String, FileStatus)
+    /// 修改文件存储类型
+    case updateFileStoreType(String, String, FileStoreType)
+    /// 修改文件生命周期
+    case updateFileLife(String, String, Int)
+    
+    /// 查询文件元信息
+    case queryFileMetaInfo(String, String)
+    #warning("待测试")
+    ///更新文件元信息,
+    case updateFileMetaInfo(String, String, String, String, String, String)
+    /// 资源移动／重命名
+    case renameFile(String, String, String, String, Bool)
+    /// 资源拷贝
+    case copyFile(String, String, String, String, Bool)
+    /// 资源删除
+    case deleteFile(String, String)
+    /// 资源列举
+    
+    /// 镜像资源更新
+    case prefetchFile(String, String)
+    
+    /// 文件直传
+    /// 创建块
+    /// 上传片
+    /// 追加文件
+    /// 创建文件
 }
 
 extension QiNiuProvider: TargetType {
@@ -31,10 +60,12 @@ extension QiNiuProvider: TargetType {
             return URL(string: "https://rs.qbox.me/")!
         case .bucketSpaceDomainName:
             return URL(string: "https://api.qiniu.com/")!
-        case .createBucket, .deleteBucket:
+        case .createBucket, .deleteBucket, .updateFileStatus, .updateFileStoreType, .updateFileLife, .queryFileMetaInfo, .updateFileMetaInfo, .renameFile, .copyFile, .deleteFile:
             return URL(string: "https://rs.qiniu.com")!
         case .setBucketAccess, .setBucketTags, .queryBucketTags, .deleteBucketTags:
             return URL(string: "https://uc.qbox.me")!
+        case .prefetchFile:
+            return URL(string: "https://iovip.qbox.me")!
         }
     }
     
@@ -54,12 +85,41 @@ extension QiNiuProvider: TargetType {
             return "bucketTagging?bucket=\(bucketName)"
         case .queryBucketTags, .deleteBucketTags:
             return "bucketTagging"
+        case .updateFileStatus(let encodedEntry, let fileName, let status):
+            let encodedEntry = Base64FS.encodeString(str: "\(encodedEntry):\(fileName)")
+            return "chstatus/\(encodedEntry)/status/\(status.rawValue)"
+        case .updateFileStoreType(let bucketName, let fileName, let storeType):
+            let encodedEntry = Base64FS.encodeString(str: "\(bucketName):\(fileName)")
+            return "chtype/\(encodedEntry)/type/\(storeType.rawValue)"
+        case .updateFileLife(let bucketName, let fileName, let life):
+            let encodedEntry = Base64FS.encodeString(str: "\(bucketName):\(fileName)")
+            return "deleteAfterDays/\(encodedEntry)/\(life)"
+        case .queryFileMetaInfo(let bucketName, let fileName):
+            let encodedEntry = Base64FS.encodeString(str: "\(bucketName):\(fileName)")
+            return "stat/\(encodedEntry)"
+        case .updateFileMetaInfo(let bucketName, let fileName, let mimeType, let metaKey, let metaValue, let encoded):
+            let encodedEntry = Base64FS.encodeString(str: "\(bucketName):\(fileName)")
+            return "chgm/\(encodedEntry)/mime/\(mimeType)/x-qn-meta-\(metaKey)/\(metaValue)/cond/\(encoded) "
+        case .renameFile(let fromBucket, let fromFile, let toBucket, let toFile, let force):
+            let fromEntry = Base64FS.encodeString(str: "\(fromBucket):\(fromFile)")
+            let toEntry = Base64FS.encodeString(str: "\(toBucket):\(toFile)")
+            return "move/\(fromEntry)/\(toEntry)/force/\(force)"
+        case .copyFile(let fromBucket, let fromFile, let toBucket, let toFile, let force):
+            let fromEntry = Base64FS.encodeString(str: "\(fromBucket):\(fromFile)")
+            let toEntry = Base64FS.encodeString(str: "\(toBucket):\(toFile)")
+            return "copy/\(fromEntry)/\(toEntry)/force/\(force)"
+        case .deleteFile(let bucket, let file):
+            let entry = Base64FS.encodeString(str: "\(bucket):\(file)")
+            return "delete/\(entry)"
+        case .prefetchFile(let bucket, let file):
+            let entry = Base64FS.encodeString(str: "\(bucket):\(file)")
+            return "prefetch/\(entry)"
         }
     }
     
     public var method: HTTPMethod {
         switch self {
-        case .buckets, .createBucket, .deleteBucket, .setBucketAccess:
+        case .buckets, .createBucket, .deleteBucket, .setBucketAccess, .updateFileStatus, .queryFileMetaInfo, .updateFileLife, .updateFileStoreType, .updateFileMetaInfo, .deleteFile, .renameFile, .copyFile, .prefetchFile:
             return .POST
         case .bucketSpaceDomainName, .queryBucketTags:
             return .GET
@@ -72,7 +132,7 @@ extension QiNiuProvider: TargetType {
     
     public var task: Task {
         switch self {
-        case .buckets, .createBucket, .deleteBucket:
+        case .buckets, .createBucket, .deleteBucket, .updateFileStatus, .updateFileStoreType, .queryFileMetaInfo, .updateFileLife, .updateFileMetaInfo, .renameFile, .copyFile, .deleteFile, .prefetchFile:
             return .requestPlain
         case .bucketSpaceDomainName(let bucketName):
             return .requestParameters(parameters: ["tbl": bucketName], encoding: URLEncoding.queryString)
