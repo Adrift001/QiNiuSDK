@@ -5,7 +5,7 @@
 //  Created by 荆学涛 on 2019/8/18.
 //
 
-public enum QiNiuProvider {
+public enum BucketProvider {
     /// 获取 Bucket 列表
     case buckets
     /// 获取 Bucket 空间域名
@@ -34,7 +34,7 @@ public enum QiNiuProvider {
     case queryFileMetaInfo(String, String)
     #warning("待测试")
     ///更新文件元信息,
-    case updateFileMetaInfo(String, String, String, String, String, String)
+    case updateFileMetaInfo(ResourceMetaInfo)
     /// 资源移动／重命名
     case renameFile(String, String, String, String, Bool)
     /// 资源拷贝
@@ -53,7 +53,7 @@ public enum QiNiuProvider {
     /// 创建文件
 }
 
-extension QiNiuProvider: TargetType {
+extension BucketProvider: TargetType {
     public var baseURL: URL {
         switch self {
         case .buckets:
@@ -85,21 +85,20 @@ extension QiNiuProvider: TargetType {
             return "bucketTagging?bucket=\(bucketName)"
         case .queryBucketTags, .deleteBucketTags:
             return "bucketTagging"
-        case .updateFileStatus(let encodedEntry, let fileName, let status):
-            let encodedEntry = Base64FS.encodeString(str: "\(encodedEntry):\(fileName)")
-            return "chstatus/\(encodedEntry)/status/\(status.rawValue)"
+        case .updateFileStatus(let encodedEntryUri, let fileName, let status):
+            let encodedEntryUri = Base64FS.encodeString(str: "\(encodedEntryUri):\(fileName)")
+            return "chstatus/\(encodedEntryUri)/status/\(status.rawValue)"
         case .updateFileStoreType(let bucketName, let fileName, let storeType):
-            let encodedEntry = Base64FS.encodeString(str: "\(bucketName):\(fileName)")
-            return "chtype/\(encodedEntry)/type/\(storeType.rawValue)"
+            let encodedEntryUri = Base64FS.encodeString(str: "\(bucketName):\(fileName)")
+            return "chtype/\(encodedEntryUri)/type/\(storeType.rawValue)"
         case .updateFileLife(let bucketName, let fileName, let life):
-            let encodedEntry = Base64FS.encodeString(str: "\(bucketName):\(fileName)")
-            return "deleteAfterDays/\(encodedEntry)/\(life)"
+            let encodedEntryUri = Base64FS.encodeString(str: "\(bucketName):\(fileName)")
+            return "deleteAfterDays/\(encodedEntryUri)/\(life)"
         case .queryFileMetaInfo(let bucketName, let fileName):
-            let encodedEntry = Base64FS.encodeString(str: "\(bucketName):\(fileName)")
-            return "stat/\(encodedEntry)"
-        case .updateFileMetaInfo(let bucketName, let fileName, let mimeType, let metaKey, let metaValue, let encoded):
-            let encodedEntry = Base64FS.encodeString(str: "\(bucketName):\(fileName)")
-            return "chgm/\(encodedEntry)/mime/\(mimeType)/x-qn-meta-\(metaKey)/\(metaValue)/cond/\(encoded) "
+            let encodedEntryUri = Base64FS.encodeString(str: "\(bucketName):\(fileName)")
+            return "stat/\(encodedEntryUri)"
+        case .updateFileMetaInfo(let metaInfo):
+            return "chgm/\(metaInfo.encodedEntryUri)/mime/\(metaInfo.encodedMimeType)/x-qn-meta-\(metaInfo.metaKey)/\(metaInfo.encodedMetaValue)/cond/\(metaInfo.encodedCond)"
         case .renameFile(let fromBucket, let fromFile, let toBucket, let toFile, let force):
             let fromEntry = Base64FS.encodeString(str: "\(fromBucket):\(fromFile)")
             let toEntry = Base64FS.encodeString(str: "\(toBucket):\(toFile)")
@@ -155,7 +154,7 @@ extension QiNiuProvider: TargetType {
     }
 }
 
-extension QiNiuProvider {
+extension BucketProvider {
     func urlEncodingHeaders() -> [String: String] {
         return [
             "User-Agent": "QiNiuSDK",
