@@ -42,9 +42,13 @@ public enum BucketProvider {
     /// 资源删除
     case deleteFile(String, String)
     /// 资源列举
+    case querySource(String, String, String, String, String)
     
     /// 镜像资源更新
     case prefetchFile(String, String)
+    
+    /// 批量查询元数据
+    case batchFileMetaInfo(String, [String])
     
     /// 文件直传
     /// 创建块
@@ -60,12 +64,14 @@ extension BucketProvider: TargetType {
             return URL(string: "https://rs.qbox.me/")!
         case .bucketSpaceDomainName:
             return URL(string: "https://api.qiniu.com/")!
-        case .createBucket, .deleteBucket, .updateFileStatus, .updateFileStoreType, .updateFileLife, .queryFileMetaInfo, .updateFileMetaInfo, .renameFile, .copyFile, .deleteFile:
+        case .createBucket, .deleteBucket, .updateFileStatus, .updateFileStoreType, .updateFileLife, .queryFileMetaInfo, .updateFileMetaInfo, .renameFile, .copyFile, .deleteFile, .batchFileMetaInfo:
             return URL(string: "https://rs.qiniu.com")!
         case .setBucketAccess, .setBucketTags, .queryBucketTags, .deleteBucketTags:
             return URL(string: "https://uc.qbox.me")!
         case .prefetchFile:
             return URL(string: "https://iovip.qbox.me")!
+        case .querySource:
+            return URL(string: "https://rsf.qbox.me")!
         }
     }
     
@@ -113,14 +119,18 @@ extension BucketProvider: TargetType {
         case .prefetchFile(let bucket, let file):
             let entry = Base64FS.encodeString(str: "\(bucket):\(file)")
             return "prefetch/\(entry)"
+        case .querySource:
+            return "list"
+        case .batchFileMetaInfo:
+            return "batch"
         }
     }
     
     public var method: HTTPMethod {
         switch self {
-        case .buckets, .createBucket, .deleteBucket, .setBucketAccess, .updateFileStatus, .queryFileMetaInfo, .updateFileLife, .updateFileStoreType, .updateFileMetaInfo, .deleteFile, .renameFile, .copyFile, .prefetchFile:
+        case .buckets, .createBucket, .deleteBucket, .setBucketAccess, .updateFileStatus, .queryFileMetaInfo, .updateFileLife, .updateFileStoreType, .updateFileMetaInfo, .deleteFile, .renameFile, .copyFile, .prefetchFile, .batchFileMetaInfo:
             return .POST
-        case .bucketSpaceDomainName, .queryBucketTags:
+        case .bucketSpaceDomainName, .queryBucketTags, .querySource:
             return .GET
         case .setBucketTags:
             return .PUT
@@ -141,6 +151,21 @@ extension BucketProvider: TargetType {
             return .requestJSONEncodable(tags)
         case .queryBucketTags(let bucketName), .deleteBucketTags(let bucketName):
             return .requestParameters(parameters: ["bucket": bucketName], encoding: URLEncoding.queryString)
+        case .querySource(let bucketName, let marker, let limit, let prefix, let delimiter):
+            let encodedPrefix = Base64FS.encodeString(str: prefix)
+            let encodedDelimiter = Base64FS.encodeString(str: delimiter)
+            return .requestParameters(parameters: ["bucket": bucketName, "marker": marker, "limit": limit, "prefix": encodedPrefix, "delimiter": encodedDelimiter], encoding: URLEncoding.queryString)
+        case .batchFileMetaInfo(let bucketName, let fileNames):
+            var result = ""
+            for (index, fileName) in fileNames.enumerated() {
+                if index == fileNames.count - 1 {
+                    result += "op=stat/\(Base64FS.encodeString(str: "\(bucketName):\(fileName)"))"
+                } else {
+                    result += "op=stat/\(Base64FS.encodeString(str: "\(bucketName):\(fileName)"))&"
+                }
+            }
+            return .requestCompositeData(bodyData: result.data(using: .utf8)!, urlParameters: [:])
+            
         }
     }
     

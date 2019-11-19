@@ -11,7 +11,7 @@ public struct ResourceMetaInfo: Codable {
     var mimeType: String
     var metaKey: String
     var metaValue: String
-    var cond: [String: String] = [:]
+    var cond: ResourceMetaInfoCond
     
     var encodedEntryUri: String {
         return Base64FS.encodeString(str: "\(bucketName):\(fileName)")
@@ -27,13 +27,28 @@ public struct ResourceMetaInfo: Codable {
     
     var encodedCond: String {
         var result = ""
-        for (index, dic) in cond.enumerated() {
-            if index == cond.count - 1 {
-                result += "\(dic.key)=\(dic.value)"
-            } else {
-                result += "\(dic.key)=\(dic.value)&"
-            }
+        if !cond.hash.isEmpty {
+            result += "hash=\(cond.hash)&"
         }
-        return Base64FS.encodeString(str: result)
+        if !cond.mime.isEmpty {
+            result += "mime=\(cond.mime)&"
+        }
+        if cond.fsize != 0 {
+            result += "fsize=\(cond.fsize)&"
+        }
+        if !cond.putTime.isEmpty {
+            result += "putTime=\(cond.putTime)&"
+        }
+        if !result.isEmpty {
+            return Base64FS.encodeString(str: String(result.dropLast()))
+        }
+        return ""
     }
+}
+
+public struct ResourceMetaInfoCond: Codable {
+    var hash = ""
+    var mime = ""
+    var fsize = 0
+    var putTime = ""
 }

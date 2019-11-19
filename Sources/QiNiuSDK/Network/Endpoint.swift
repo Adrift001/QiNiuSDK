@@ -57,6 +57,9 @@ extension Endpoint {
             return try request.encoded(parameters: parameters, parameterEncoding: parameterEncoding)
         case let .requestJSONEncodable(encodable):
             return try request.encoded(encodable: encodable)
+        case let .requestCompositeData(bodyData: data, urlParameters: urlParameters):
+            request.body = Body.data(data)
+            return try request.encoded(parameters: urlParameters, parameterEncoding: URLEncoding.queryString)
         }
     }
 }

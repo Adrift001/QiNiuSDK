@@ -23,4 +23,7 @@ public enum Task {
     
     /// A request body set with `Encodable` type
     case requestJSONEncodable(Encodable)
+    
+    /// A requests body set with data, combined with url parameters.
+    case requestCompositeData(bodyData: Data, urlParameters: [String: Any])
 }

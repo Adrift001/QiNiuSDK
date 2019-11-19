@@ -16,7 +16,7 @@ final class BucketTests: XCTestCase {
     let timeout: TimeInterval = 5
     override func setUp() {
         super.setUp()
-        
+
     }
     
     func testBuckets() throws {
@@ -224,8 +224,9 @@ final class BucketTests: XCTestCase {
         try task.wait()
     }
     
+    #warning("待验证")
     func testUpdateMetaInfo() throws {
-        let metaInfo = ResourceMetaInfo(bucketName: "blog-pic", fileName: "1111111111.png", mimeType: "jpg", metaKey: "jpg_key", metaValue: "jpg_value", cond: ["condKey1": "condValue1"])
+        let metaInfo = ResourceMetaInfo(bucketName: "blog-pic", fileName: "1111111111.png", mimeType: "jpg", metaKey: "jpg_key", metaValue: "jpg_value", cond: ResourceMetaInfoCond(hash: "", mime: "image/jpg", fsize: 0, putTime: ""))
         print(metaInfo.cond)
         let provider = Provider<BucketProvider>()
         let task = provider.request(.updateFileMetaInfo(metaInfo))
@@ -240,9 +241,55 @@ final class BucketTests: XCTestCase {
         try task.wait()
     }
     
+    func testQuerySource() throws {
+        let provider = Provider<BucketProvider>()
+        let task = provider.request(.querySource("blog-pic", "", "10", "", ""))
+        task.mapCodable(QuerySource.self).whenComplete { (result) in
+            switch result {
+            case .success(let model):
+                do {
+                    let encoder = JSONEncoder()
+                    let data = try encoder.encode(model)
+                    print(String(data: data, encoding: .utf8))
+                } catch {
+                    print(error)
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
+    func testBatchSourceMetaInfo() throws {
+        let provider = Provider<BucketProvider>()
+        let task = provider.request(.batchFileMetaInfo("blog-pic", ["1111111111.png"]))
+        task.mapCodable(QuerySource.self).whenComplete { (result) in
+            switch result {
+            case .success(let model):
+                do {
+                    let encoder = JSONEncoder()
+                    let data = try encoder.encode(model)
+                    print(String(data: data, encoding: .utf8))
+                } catch {
+                    print(error)
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+        try task.wait()
+    }
+    
     func testAuth() throws {
         let str = Base64FS.encodeString(str: "qiniuphotos:gogopher.jpg")
         print(str)
+        let str1 = Base64FS.decodeString(str: "ZnNpemU9Ng==")
+        print(str1)
+        
+        let test = 14408200048442046
+        print(test)
+        
     }
     
     
