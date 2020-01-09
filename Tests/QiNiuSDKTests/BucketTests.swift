@@ -16,7 +16,8 @@ final class BucketTests: XCTestCase {
     let timeout: TimeInterval = 5
     override func setUp() {
         super.setUp()
-
+        Keys.accessKey = "Q1vQolnjdnFXZxyC-n06-U2bjJRSSEqPwB0VFfeR"
+        Keys.secretKey = "hKpdt7SDNNrpy7iuxXAbKeLaG5rH1kQOHmFbbY4e"
     }
     
     func testBuckets() throws {
