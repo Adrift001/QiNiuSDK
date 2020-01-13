@@ -1,7 +1,5 @@
 # QiNiuSDK
 
-![Travis (.org)](https://img.shields.io/travis/Adrift001/QiNiuSDK)
-
 生成七牛上传凭证
 
 ## 安装
@@ -28,7 +26,6 @@ print(token)
 
 ## 详细操作
 
-请参考 [Java SDK
-](https://developer.qiniu.com/kodo/sdk/1239/java) 
+具体操作参考 `BucketTests.swift`
 
 > 注意: 没有服务器直传部分的功能.
