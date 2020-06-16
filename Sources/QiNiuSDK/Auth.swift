@@ -4,8 +4,11 @@
 //
 //  Created by 荆学涛 on 2019/5/6.
 //
-
-import CryptoSwift
+#if (os(macOS))
+import CryptoKit
+#else
+import Crypto
+#endif
 
 public final class Auth {
     
@@ -96,28 +99,22 @@ public final class Auth {
         x["deadline"] = deadline
         
         let encodedPutPolicy = Base64FS.encodeString(str: x.toJSONString())
-        do {
-            // 参考:http://m.hangge.com/news/cache/detail_1867.html
-            let sign = try HMAC(key: secretKey.bytes, variant: .sha1).authenticate(encodedPutPolicy.bytes)
-            
-            let encodedSign = String(bytes: Base64FS.encode(data: sign), encoding: .utf8) ?? ""
-            
+        if let encodedPutPolicyData = encodedPutPolicy.data(using: String.Encoding.utf8), let secretKeyData = secretKey.data(using: .utf8) {
+            let sign = HMAC<Insecure.SHA1>.authenticationCode(for: Array(encodedPutPolicyData), using: SymmetricKey(data: secretKeyData))
+            let encodedSign = String(bytes: Base64FS.encode(data: Array(sign)), encoding: .utf8) ?? ""
             let uploadToken = "\(accessKey):\(encodedSign):\(encodedPutPolicy)"
             return uploadToken
-        } catch {
-            return ""
         }
+        return ""
     }
     
     public static func accessToken(path: String) -> String  {
-        do {
-            // 参考:http://m.hangge.com/news/cache/detail_1867.html
-            let sign = try HMAC(key: Keys.secretKey.bytes, variant: .sha1).authenticate(path.bytes)
-            let encodedSign = String(bytes: Base64FS.encode(data: sign), encoding: .utf8) ?? ""
-            let accessToken = "\(Keys.accessKey):\(encodedSign)"
-            return accessToken
-        } catch {
-            return ""
+        if let secretKeyData = Keys.secretKey.data(using: String.Encoding.utf8), let pathData = path.data(using: String.Encoding.utf8) {
+            let sign = HMAC<Insecure.SHA1>.authenticationCode(for: Array(pathData), using: SymmetricKey(data: secretKeyData))
+              let encodedSign = String(bytes: Base64FS.encode(data: Array(sign)), encoding: .utf8) ?? ""
+              let accessToken = "\(Keys.accessKey):\(encodedSign)"
+              return accessToken
         }
+        return ""
     }
 }

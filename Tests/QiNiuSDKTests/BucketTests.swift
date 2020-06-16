@@ -7,7 +7,7 @@
 
 import XCTest
 @testable import QiNiuSDK
-@testable import CryptoSwift
+@testable import Crypto
 @testable import AsyncHTTPClient
 @testable import NIOHTTP1
 @testable import NIO
@@ -16,12 +16,12 @@ final class BucketTests: XCTestCase {
     let timeout: TimeInterval = 5
     override func setUp() {
         super.setUp()
-        Keys.accessKey = "Q1vQolnjdnFXZxyC-n06-U2bjJRSSEqPwB0VFfeR"
-        Keys.secretKey = "hKpdt7SDNNrpy7iuxXAbKeLaG5rH1kQOHmFbbY4e"
+        Keys.accessKey = "PPBgn37Y5q6bym3VacIQ6XY7Rjdpu2kHJW6WrOG0"
+        Keys.secretKey = "bd8Ivqso_5mutjtb8sfhcQHIjnLTxMNcHRPdJsrN"
     }
     
     func testBuckets() throws {
-        let provider = Provider<BucketProvider>()
+        let provider = Provider<BucketProvider>(plugins: [AuthPlugin(), NetworkLoggerPlugin(verbose: true),])
         let task = provider.request(.buckets)
         task.mapCodable([String].self).whenComplete { (result) in
             switch result {

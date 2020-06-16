@@ -60,7 +60,8 @@ public class Provider<Target: TargetType>: ProviderType {
     public func request(_ target: Target) -> EventLoopFuture<Response>  {
         let endpoint = self.endpoint(target)
         let request = try! endpoint.urlRequest()
-        plugins.forEach { $0.willSend(request, target: target) }
+        let preparedRequest = plugins.reduce(request) { $1.prepare($0, target: target) }
+        plugins.forEach { $0.willSend(preparedRequest, target: target) }
         let task = client.execute(request: request)
         return task
     }
@@ -69,7 +70,7 @@ public class Provider<Target: TargetType>: ProviderType {
         do {
             try client.syncShutdown()
         } catch {
-            QiNiuSDKLogger.default.error("client.syncShutdown error")
+            //QiNiuSDKLogger.default.error("client.syncShutdown error")
         }
     }
 }
