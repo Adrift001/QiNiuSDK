@@ -4,11 +4,8 @@
 //
 //  Created by 荆学涛 on 2019/5/6.
 //
-#if (os(macOS))
-import CryptoKit
-#else
-import Crypto
-#endif
+
+import CryptoSwift
 
 public final class Auth {
     
@@ -99,22 +96,26 @@ public final class Auth {
         x["deadline"] = deadline
         
         let encodedPutPolicy = Base64FS.encodeString(str: x.toJSONString())
-        if let encodedPutPolicyData = encodedPutPolicy.data(using: String.Encoding.utf8), let secretKeyData = secretKey.data(using: .utf8) {
-            let sign = HMAC<Insecure.SHA1>.authenticationCode(for: Array(encodedPutPolicyData), using: SymmetricKey(data: secretKeyData))
-            let encodedSign = String(bytes: Base64FS.encode(data: Array(sign)), encoding: .utf8) ?? ""
-            let uploadToken = "\(accessKey):\(encodedSign):\(encodedPutPolicy)"
-            return uploadToken
+        do {
+            // 参考:http://m.hangge.com/news/cache/detail_1867.html
+            let sign = try HMAC(key: secretKey.bytes, variant: .sha1).authenticate(encodedPutPolicy.bytes)
+            
+            let encodedSign = String(bytes: Base64FS.encode(data: sign), encoding: .utf8) ?? ""
+            return encodedSign
+        } catch {
+            return ""
         }
-        return ""
     }
     
-    public static func accessToken(path: String) -> String  {
-        if let secretKeyData = Keys.secretKey.data(using: String.Encoding.utf8), let pathData = path.data(using: String.Encoding.utf8) {
-            let sign = HMAC<Insecure.SHA1>.authenticationCode(for: Array(pathData), using: SymmetricKey(data: secretKeyData))
-              let encodedSign = String(bytes: Base64FS.encode(data: Array(sign)), encoding: .utf8) ?? ""
-              let accessToken = "\(Keys.accessKey):\(encodedSign)"
-              return accessToken
+    public static func accessToken(signingStr: String) -> String  {
+        do {
+            let sign = try HMAC(key: Keys.secretKey.bytes, variant: .sha1).authenticate(signingStr.bytes)
+            
+            let encodedSign = String(bytes: Base64FS.encode(data: Array(sign.toHexString().utf8)), encoding: .utf8) ?? ""
+            let accessToken = "\(Keys.accessKey):\(encodedSign)"
+            return accessToken
+        } catch {
+            return ""
         }
-        return ""
     }
 }

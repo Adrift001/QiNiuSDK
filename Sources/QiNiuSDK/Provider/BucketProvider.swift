@@ -181,9 +181,9 @@ extension BucketProvider: TargetType {
 
 extension BucketProvider {
     func urlEncodingHeaders() -> [String: String] {
-        return [
-            "User-Agent": "QiNiuSDK",
-            "Content-Type": "application/x-www-form-urlencoded"
+        return [:
+//            "User-Agent": "QiNiuSDK",
+//            "Content-Type": "application/x-www-form-urlencoded"
         ]
     }
     

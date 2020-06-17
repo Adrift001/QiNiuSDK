@@ -10,25 +10,23 @@ import Foundation
 struct AuthPlugin: PluginType {
     
     func authorization(request: Request) -> String {
-        return "QBox \(Auth.accessToken(path: "\(request.url.path)\n"))"
-    }
-    
-    func urlAuthorization(request: Request) -> String {
-        return "QBox \(Auth.accessToken(path: "\(request.url.path + "?" + (request.url.query ?? ""))\n"))"
+        let method = request.method.rawValue
+        let path = request.url.path
+        var query = request.url.query ?? ""
+        query = query.isEmpty ? "" : "?\(query)"
+        let host = request.url.host ?? ""
+        var contentType = request.headers["Content-Type"].first ?? ""
+        contentType = contentType.isEmpty ? "" : "\nContent-Type: \(contentType)"
+        let signingStr = "\(method) \(path)\(query)\nHost: \(host)\(contentType)\n\n"
+        print("================")
+        print(signingStr)
+        print("================")
+        return "Qiniu \(Auth.accessToken(signingStr: signingStr))"
     }
     
     func prepare(_ request: Request, target: TargetType) -> Request {
         var request = request
-        if let target = Optional(target) as? BucketProvider {
-            switch target {
-            case .buckets:
-                request.headers.add(name: "Authorization", value: authorization(request: request))
-            case .bucketSpaceDomainName:
-                request.headers.add(name: "Authorization", value: urlAuthorization(request: request))
-            default:
-                break
-            }
-        }
+        request.headers.add(name: "Authorization", value: authorization(request: request))
         return request
     }
 }
