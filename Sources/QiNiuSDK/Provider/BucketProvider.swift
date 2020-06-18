@@ -7,7 +7,7 @@
 
 public enum BucketProvider {
     /// 获取 Bucket 列表
-    case buckets
+    case buckets([TagConditionModel])
     /// 获取 Bucket 空间域名
     case bucketSpaceDomainName(String)
     /// 创建 Bucket, 空间名称,地区 (空间名称不能有下划线,可以用中划线)
@@ -128,9 +128,9 @@ extension BucketProvider: TargetType {
     
     public var method: HTTPMethod {
         switch self {
-        case .buckets, .createBucket, .deleteBucket, .setBucketAccess, .updateFileStatus, .queryFileMetaInfo, .updateFileLife, .updateFileStoreType, .updateFileMetaInfo, .deleteFile, .renameFile, .copyFile, .prefetchFile, .batchFileMetaInfo:
+        case .createBucket, .deleteBucket, .setBucketAccess, .updateFileStatus, .queryFileMetaInfo, .updateFileLife, .updateFileStoreType, .updateFileMetaInfo, .deleteFile, .renameFile, .copyFile, .prefetchFile, .batchFileMetaInfo:
             return .POST
-        case .bucketSpaceDomainName, .queryBucketTags, .querySource:
+        case .buckets, .bucketSpaceDomainName, .queryBucketTags, .querySource:
             return .GET
         case .setBucketTags:
             return .PUT
@@ -141,12 +141,22 @@ extension BucketProvider: TargetType {
     
     public var task: Task {
         switch self {
-        case .buckets, .createBucket, .deleteBucket, .updateFileStatus, .updateFileStoreType, .queryFileMetaInfo, .updateFileLife, .updateFileMetaInfo, .renameFile, .copyFile, .deleteFile, .prefetchFile:
+        case .createBucket, .deleteBucket, .updateFileStatus, .updateFileStoreType, .queryFileMetaInfo, .updateFileLife, .updateFileMetaInfo, .renameFile, .copyFile, .deleteFile, .prefetchFile:
             return .requestPlain
         case .bucketSpaceDomainName(let bucketName):
             return .requestParameters(parameters: ["tbl": bucketName], encoding: URLEncoding.queryString)
         case .setBucketAccess(let bucketName, let access):
             return .requestParameters(parameters: ["bucket": bucketName, "private": access.rawValue], encoding: URLEncoding.queryString)
+        case .buckets(let tags):
+            var tagCondition = ""
+            for (index, model) in tags.enumerated() {
+                if index == tags.count - 1 {
+                    tagCondition.append("\(model.key)=\(model.value)")
+                } else {
+                    tagCondition.append("\(model.key)=\(model.value)&")
+                }
+            }
+            return .requestParameters(parameters: ["tagCondition": Base64FS.encodeString(str: tagCondition)], encoding: URLEncoding.queryString)
         case .setBucketTags(_, let tags):
             return .requestJSONEncodable(tags)
         case .queryBucketTags(let bucketName), .deleteBucketTags(let bucketName):
@@ -181,9 +191,9 @@ extension BucketProvider: TargetType {
 
 extension BucketProvider {
     func urlEncodingHeaders() -> [String: String] {
-        return [:
-//            "User-Agent": "QiNiuSDK",
-//            "Content-Type": "application/x-www-form-urlencoded"
+        return [
+            "User-Agent": "QiNiuSDK",
+            "Content-Type": "application/x-www-form-urlencoded"
         ]
     }
     

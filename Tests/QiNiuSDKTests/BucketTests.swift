@@ -7,10 +7,11 @@
 
 import XCTest
 @testable import QiNiuSDK
-@testable import CryptoSwift
+@testable import Crypto
 @testable import AsyncHTTPClient
 @testable import NIOHTTP1
 @testable import NIO
+@testable import Crypto
 
 final class BucketTests: XCTestCase {
     let timeout: TimeInterval = 5
@@ -18,37 +19,14 @@ final class BucketTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        Keys.accessKey = ""
-        Keys.secretKey = ""
+        Keys.accessKey = "6OOZlLGj_uVygc46QSClopm8hwNWxCg7nU50pb-t"
+        Keys.secretKey = "gWciJVz-ROAQjWQdvfv-R7Ju7aZxjRZvUbT93_Gp"
         provider = Provider<BucketProvider>(plugins: [AuthPlugin(), NetworkLoggerPlugin(verbose: true),])
-    }
-    
-    func testHMAC() {
-        let message = "123123abcd\n"
-        let key = "123"
-        let sign = try! HMAC(key: key.bytes, variant: .sha1).authenticate(message.bytes)
-        print(sign.toHexString())
-    }
-    
-    func testToken() {
-        //正确结果: b1d6d455b40504e1d4ca2985eb9899286be2e038
-        print("====================")
-        print(Keys.accessKey)
-        print(Keys.secretKey)
-        print("====================")
-        
-        let signingStr = "POST /buckets\nHost: rs.qbox.me\nContent-Type: application/x-www-form-urlencoded\n\n"
-        let sign = try! HMAC(key: Keys.secretKey.bytes, variant: .sha1).authenticate(signingStr.bytes)
-        print(sign.toHexString())
-        print( Base64FS.encode(data: sign).toHexString())
-        print( Base64FS.encode(data: sign).toBase64() ?? "")
-        let encodedSign = String(bytes: Base64FS.encode(data: Array(sign.toHexString().utf8)), encoding: .utf8) ?? ""
-        print(encodedSign)
     }
     
     func testBuckets() throws {
         provider = Provider<BucketProvider>(plugins: [AuthPlugin(), NetworkLoggerPlugin(verbose: true),])
-        let task = provider.request(.buckets)
+        let task = provider.request(.buckets([TagConditionModel(key: "key1", value: "value1")]))
         task.mapCodable([String].self).whenComplete { (result) in
             switch result {
             case .success(let arr):
@@ -295,7 +273,6 @@ final class BucketTests: XCTestCase {
         
         let test = 14408200048442046
         print(test)
-        
     }
     
     

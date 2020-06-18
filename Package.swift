@@ -18,7 +18,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/swift-server/async-http-client.git", from: "1.1.1"),
-        .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.3.1"),
+        .package(url: "https://github.com/apple/swift-crypto.git", from: "1.0.2"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -27,7 +27,7 @@ let package = Package(
             name: "QiNiuSDK",
             dependencies: [
                 .product(name: "AsyncHTTPClient", package: "async-http-client"),
-                .product(name: "CryptoSwift", package: "CryptoSwift"),
+                .product(name: "Crypto", package: "swift-crypto"),
         ]),
         .testTarget(
             name: "QiNiuSDKTests",
