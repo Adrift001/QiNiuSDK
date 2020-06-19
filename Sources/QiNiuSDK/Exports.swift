@@ -6,3 +6,7 @@
 //
 
 @_exported import Foundation
+//@_exported import AsyncHTTPClient
+@_exported import NIOHTTP1
+@_exported import AsyncHTTPClient
+@_exported import NIO
