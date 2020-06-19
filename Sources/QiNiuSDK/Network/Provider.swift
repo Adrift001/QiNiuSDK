@@ -69,7 +69,7 @@ public class Provider<Target: TargetType>: ProviderType {
         do {
             try client.syncShutdown()
         } catch {
-            QiNiuSDKLogger.default.error("client.syncShutdown error")
+            print(error)
         }
     }
 }

@@ -10,7 +10,7 @@ final class QiNiuSDKTests: XCTestCase {
     }
     
     func testUploadToken() {
-        let auth = Auth.create(accessKey: "xxx", secretKey: "xxx")
+        let auth = Auth.create()
         let token = auth.uploadToken(bucket: "picture")
         print(token)
     }

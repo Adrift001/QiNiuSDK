@@ -48,8 +48,6 @@ public struct URLEncoding: ParameterEncoding {
             if let url = urlComponents.url {
                 var request = try Request(url: url, method: urlRequest.method, headers: urlRequest.headers, body: urlRequest.body)
                 request.headers.add(name: "Authorization", value: "QBox \(Auth.accessToken(path: "\(url.path + "?" + (url.query ?? ""))\n"))")
-                QiNiuSDKLogger.default.info("\(request.url.absoluteString)")
-                QiNiuSDKLogger.default.info("\(request.headers.description)")
                 return request
             } else {
                 throw QiNiuError.missingURL
@@ -144,8 +142,6 @@ public struct JSONEncoding: ParameterEncoding {
                 request.headers.add(name: "Content-Type", value: "application/json")
             }
             request.headers.add(name: "Authorization", value: "QBox \(Auth.accessToken(path: "\(urlRequest.url.path)\n"))")
-            QiNiuSDKLogger.default.info("\(request.url.absoluteString)")
-            QiNiuSDKLogger.default.info("\(request.headers.description)")
             return request
         } catch {
             throw QiNiuError.jsonEncodingFailed(error: error)
