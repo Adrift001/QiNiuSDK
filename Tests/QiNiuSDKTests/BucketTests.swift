@@ -7,22 +7,26 @@
 
 import XCTest
 @testable import QiNiuSDK
-@testable import CryptoSwift
+@testable import Crypto
 @testable import AsyncHTTPClient
 @testable import NIOHTTP1
 @testable import NIO
+@testable import Crypto
 
 final class BucketTests: XCTestCase {
     let timeout: TimeInterval = 5
+    var provider:Provider<BucketProvider>!
+    
     override func setUp() {
         super.setUp()
-        Keys.accessKey = "Q1vQolnjdnFXZxyC-n06-U2bjJRSSEqPwB0VFfeR"
-        Keys.secretKey = "hKpdt7SDNNrpy7iuxXAbKeLaG5rH1kQOHmFbbY4e"
+        Keys.accessKey = "6OOZlLGj_uVygc46QSClopm8hwNWxCg7nU50pb-t"
+        Keys.secretKey = "gWciJVz-ROAQjWQdvfv-R7Ju7aZxjRZvUbT93_Gp"
+        provider = Provider<BucketProvider>(plugins: [AuthPlugin(), NetworkLoggerPlugin(verbose: true),])
     }
     
     func testBuckets() throws {
-        let provider = Provider<BucketProvider>()
-        let task = provider.request(.buckets)
+        provider = Provider<BucketProvider>(plugins: [AuthPlugin(), NetworkLoggerPlugin(verbose: true),])
+        let task = provider.request(.buckets([TagConditionModel(key: "key1", value: "value1")]))
         task.mapCodable([String].self).whenComplete { (result) in
             switch result {
             case .success(let arr):
@@ -35,7 +39,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testBucketSpaceDomainName() throws {
-        let provider = Provider<BucketProvider>()
         let task = provider.request(.bucketSpaceDomainName("blog-pic"))
         task.mapCodable([String].self).whenComplete { (result) in
             switch result {
@@ -49,7 +52,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testCreateBucket() throws {
-        let provider = Provider<BucketProvider>()
         let task = provider.request(.createBucket("jingxuetao-hello", .z0))
         task.mapCodable(String.self).whenComplete { (result) in
             switch result {
@@ -63,7 +65,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testDeleteBucket() throws {
-        let provider = Provider<BucketProvider>()
         let task = provider.request(.deleteBucket("jingxuetao-hello"))
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
@@ -77,7 +78,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testSetBucketAccess() throws {
-        let provider = Provider<BucketProvider>()
         let task = provider.request(.setBucketAccess("jingxuetao-hello", .private))
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
@@ -91,8 +91,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testSetBucketTags() throws {
-        let provider = Provider<BucketProvider>()
-        
         let task = provider.request(.setBucketTags("jingxuetao-hello", BucketTagsModel(Tags: [BucketTagModel(Key: "key1", Value: "value1")])))
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
@@ -106,8 +104,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testQueryBucketTags() throws {
-        let provider = Provider<BucketProvider>()
-        
         let task = provider.request(.queryBucketTags("jingxuetao-hello"))
         task.mapCodable(BucketTagsModel.self).whenComplete { (result) in
             switch result {
@@ -121,8 +117,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testDeleteBucketTags() throws {
-        let provider = Provider<BucketProvider>()
-        
         let task = provider.request(.deleteBucketTags("jingxuetao-hello"))
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
@@ -136,8 +130,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testUpdateFileStatus() throws {
-        let provider = Provider<BucketProvider>()
-        
         let task = provider.request(.updateFileStatus("blog-pic", "1.png", .disable))
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
@@ -151,8 +143,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testUpdateFileStoreType() throws {
-        let provider = Provider<BucketProvider>()
-        
         let task = provider.request(.updateFileStoreType("blog-pic", "1.png", .low))
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
@@ -166,8 +156,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testUpdateFileLife() throws {
-        let provider = Provider<BucketProvider>()
-        
         let task = provider.request(.updateFileLife("blog-pic", "1.png", 100))
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
@@ -181,8 +169,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testUpdateFileInfo() throws {
-        let provider = Provider<BucketProvider>()
-        
         let task = provider.request(.queryFileMetaInfo("blog-pic", "1.png"))
         task.mapCodable(FileInfo.self).whenComplete { (result) in
             switch result {
@@ -196,8 +182,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testRenameFile() throws {
-        let provider = Provider<BucketProvider>()
-        
         let task = provider.request(.renameFile("blog-pic", "1.png", "blog-pic", "1111111111.png", true))
         task.mapCodable(FileInfo.self).whenComplete { (result) in
             switch result {
@@ -211,7 +195,7 @@ final class BucketTests: XCTestCase {
     }
     
     func testPrefetchFile() throws {
-        let provider = Provider<BucketProvider>()
+        
         
         let task = provider.request(.prefetchFile("blog-pic", "1111111111.png"))
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
@@ -229,7 +213,7 @@ final class BucketTests: XCTestCase {
     func testUpdateMetaInfo() throws {
         let metaInfo = ResourceMetaInfo(bucketName: "blog-pic", fileName: "1111111111.png", mimeType: "jpg", metaKey: "jpg_key", metaValue: "jpg_value", cond: ResourceMetaInfoCond(hash: "", mime: "image/jpg", fsize: 0, putTime: ""))
         print(metaInfo.cond)
-        let provider = Provider<BucketProvider>()
+        
         let task = provider.request(.updateFileMetaInfo(metaInfo))
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
@@ -243,7 +227,7 @@ final class BucketTests: XCTestCase {
     }
     
     func testQuerySource() throws {
-        let provider = Provider<BucketProvider>()
+        
         let task = provider.request(.querySource("blog-pic", "", "10", "", ""))
         task.mapCodable(QuerySource.self).whenComplete { (result) in
             switch result {
@@ -263,7 +247,6 @@ final class BucketTests: XCTestCase {
     }
     
     func testBatchSourceMetaInfo() throws {
-        let provider = Provider<BucketProvider>()
         let task = provider.request(.batchFileMetaInfo("blog-pic", ["1111111111.png"]))
         task.mapCodable(QuerySource.self).whenComplete { (result) in
             switch result {
@@ -290,7 +273,6 @@ final class BucketTests: XCTestCase {
         
         let test = 14408200048442046
         print(test)
-        
     }
     
     

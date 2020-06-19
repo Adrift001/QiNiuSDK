@@ -5,7 +5,7 @@
 //  Created by 荆学涛 on 2019/5/6.
 //
 
-import CryptoSwift
+import Crypto
 
 public final class Auth {
     
@@ -96,28 +96,16 @@ public final class Auth {
         x["deadline"] = deadline
         
         let encodedPutPolicy = Base64FS.encodeString(str: x.toJSONString())
-        do {
-            // 参考:http://m.hangge.com/news/cache/detail_1867.html
-            let sign = try HMAC(key: secretKey.bytes, variant: .sha1).authenticate(encodedPutPolicy.bytes)
-            
-            let encodedSign = String(bytes: Base64FS.encode(data: sign), encoding: .utf8) ?? ""
-            
-            let uploadToken = "\(accessKey):\(encodedSign):\(encodedPutPolicy)"
-            return uploadToken
-        } catch {
-            return ""
-        }
+        let sign = HMAC<Insecure.SHA1>.authenticationCode(for: Array(Keys.secretKey.utf8), using: SymmetricKey(data: Array(encodedPutPolicy.utf8)))
+        
+        let encodedSign = String(bytes: Base64FS.encode(data: Array(sign)), encoding: .utf8) ?? ""
+        return encodedSign
     }
     
-    public static func accessToken(path: String) -> String  {
-        do {
-            // 参考:http://m.hangge.com/news/cache/detail_1867.html
-            let sign = try HMAC(key: Keys.secretKey.bytes, variant: .sha1).authenticate(path.bytes)
-            let encodedSign = String(bytes: Base64FS.encode(data: sign), encoding: .utf8) ?? ""
-            let accessToken = "\(Keys.accessKey):\(encodedSign)"
-            return accessToken
-        } catch {
-            return ""
-        }
+    public static func accessToken(signingStr: String) -> String  {
+        let sign = HMAC<Insecure.SHA1>.authenticationCode(for: Array(Keys.secretKey.utf8), using: SymmetricKey(data: Array(signingStr.utf8)))
+        let encodedSign = String(bytes: Base64FS.encode(data: Array(sign)), encoding: .utf8) ?? ""
+        let accessToken = "\(Keys.accessKey):\(encodedSign)"
+        return accessToken
     }
 }

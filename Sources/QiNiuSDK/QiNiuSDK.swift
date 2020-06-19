@@ -17,7 +17,7 @@ public class QiNiuSDK {
     /// 获取列表名称
     /// - Parameter completionHandler: 获取列表名称回调
     public func bucket(completionHandler: @escaping (Result<[String], Error>) -> Void) {
-        let task = provider.request(.buckets)
+        let task = provider.request(.buckets([TagConditionModel(key: "key1", value: "value1")]))
         task.mapCodable([String].self).whenComplete { (result) in
             switch result {
             case .success(let arr):

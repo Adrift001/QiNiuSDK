@@ -10,6 +10,6 @@ public struct BucketTagsModel: Codable {
 }
 
 public struct BucketTagModel: Codable {
-    let Key: String
-    let Value: String
+    var Key = ""
+    var Value = ""
 }
