@@ -3,7 +3,7 @@ import Foundation
 
 /// Logs network activity (outgoing requests and incoming responses).
 public final class NetworkLoggerPlugin: PluginType {
-    fileprivate let loggerId = "Moya_Logger"
+    fileprivate let loggerId = "QiNiuSDK_Logger"
     fileprivate let dateFormatString = "dd/MM/yyyy HH:mm:ss"
     fileprivate let dateFormatter = DateFormatter()
     fileprivate let separator = ", "
@@ -66,6 +66,8 @@ private extension NetworkLoggerPlugin {
     func logNetworkRequest(_ request: Request?) -> [String] {
 
         var output = [String]()
+        
+        output += [format(loggerId, date: date, identifier: "Request URL", message: request?.url.absoluteString ?? "")]
 
         if let headers = request?.headers {
             output += [format(loggerId, date: date, identifier: "Request Headers", message: headers.description)]

@@ -40,9 +40,6 @@ extension Endpoint {
                 headers.add(name: key, value: value)
             }
         }
-        print("============")
-        print(headers.description)
-        print("============")
         var request = try Request(url: requestURL, method: method, headers: headers, body: nil)
         switch task {
         case .requestPlain:
