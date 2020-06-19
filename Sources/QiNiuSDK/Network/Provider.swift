@@ -60,8 +60,11 @@ public class Provider<Target: TargetType>: ProviderType {
     public func request(_ target: Target) -> EventLoopFuture<Response>  {
         let endpoint = self.endpoint(target)
         let request = try! endpoint.urlRequest()
-        plugins.forEach { $0.willSend(request, target: target) }
-        let task = client.execute(request: request)
+        let preparedRequest = plugins.reduce(request) { (request, plugin) -> Request in
+            return plugin.prepare(request, target: target)
+        }
+        plugins.forEach { $0.willSend(preparedRequest, target: target) }
+        let task = client.execute(request: preparedRequest)
         return task
     }
     

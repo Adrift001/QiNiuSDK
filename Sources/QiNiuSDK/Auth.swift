@@ -102,8 +102,8 @@ public final class Auth {
         return uploadToken
     }
     
-    public static func accessToken(path: String) -> String  {
-        let sign = HMAC<Insecure.SHA1>.authenticationCode(for: Array(path.utf8), using: SymmetricKey(data: Array(Keys.secretKey.utf8)))
+    public static func accessToken(signingStr: String) -> String  {
+        let sign = HMAC<Insecure.SHA1>.authenticationCode(for: Array(signingStr.utf8), using: SymmetricKey(data: Array(Keys.secretKey.utf8)))
         let encodedSign = String(bytes: Base64FS.encode(data: Array(sign)), encoding: .utf8) ?? ""
         let accessToken = "\(Keys.accessKey):\(encodedSign)"
         return accessToken

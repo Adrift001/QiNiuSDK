@@ -21,7 +21,7 @@ final class BucketTests: XCTestCase {
         Keys.secretKey = environment["sk"] ?? ""
     }
     
-    let provider = Provider<BucketProvider>(plugins: [NetworkLoggerPlugin(verbose: true)])
+    let provider = Provider<BucketProvider>(plugins: [NetworkLoggerPlugin(verbose: true), AuthorizationPlugin()])
     
     func testBuckets() throws {
         let task = provider.request(.buckets)

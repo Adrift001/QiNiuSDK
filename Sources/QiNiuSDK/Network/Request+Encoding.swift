@@ -21,7 +21,8 @@ public extension Request {
             let data = try encoder.encode(encodable)
             let url =  URL(string: self.url.absoluteString.removingPercentEncoding ?? "")
             var request = try Request(url: url!, method: method, headers: headers, body: Body.data(data))
-            request.headers.add(name: "Authorization", value: "QBox \(Auth.accessToken(path: "\(url!.path + "?" + (url!.query ?? ""))\n"))")
+            #warning("Authorization")
+//            request.headers.add(name: "Authorization", value: "QBox \(Auth.accessToken(path: "\(url!.path + "?" + (url!.query ?? ""))\n"))")
             return request
         } catch {
             throw QiNiuError.encodableMapping(error)
