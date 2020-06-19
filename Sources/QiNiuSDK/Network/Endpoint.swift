@@ -40,18 +40,9 @@ extension Endpoint {
                 headers.add(name: key, value: value)
             }
         }
-        print("============")
-        print(headers.description)
-        print("============")
         var request = try Request(url: requestURL, method: method, headers: headers, body: nil)
         switch task {
         case .requestPlain:
-            request.headers.add(name: "Authorization", value: "QBox \(Auth.accessToken(path: "\(request.url.path)\n"))")
-            print("============")
-            print(request.url.path)
-            QiNiuSDKLogger.default.info("\(request.url.absoluteString)")
-            print("============")
-            QiNiuSDKLogger.default.info("\(request.headers.description)")
             return request
         case let .requestParameters(parameters, parameterEncoding):
             return try request.encoded(parameters: parameters, parameterEncoding: parameterEncoding)
