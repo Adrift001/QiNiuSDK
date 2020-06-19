@@ -1,5 +1,7 @@
 # QiNiuSDK
 
+![Travis (.org)](https://img.shields.io/travis/Adrift001/QiNiuSDK)
+
 生成七牛上传凭证
 
 ## 安装
