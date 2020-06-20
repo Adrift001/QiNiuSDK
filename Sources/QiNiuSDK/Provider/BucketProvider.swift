@@ -193,4 +193,11 @@ extension BucketProvider {
             "Content-Type": "application/json"
         ]
     }
+    
+    func formDataHeaders() -> [String: String] {
+        return [
+            "User-Agent": "QiNiuSDK",
+            "Content-Type": "multipart/form-data"
+        ]
+    }
 }

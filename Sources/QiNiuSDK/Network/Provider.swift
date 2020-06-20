@@ -72,17 +72,6 @@ public class Provider<Target: TargetType>: ProviderType {
                 self?.plugins.forEach { $0.didReceive(.failure(.httpClientError(error)), target: target) }
             }
         }
-//            .do { (future) in
-//
-//            future.whenComplete { (result) in
-//                do {
-//                    let response = try result.get()
-//                    plugins.forEach { $0.didReceive(.success(response), target: target) }
-//                } catch {
-//
-//                }
-//            }
-//        }
         return task
     }
     
