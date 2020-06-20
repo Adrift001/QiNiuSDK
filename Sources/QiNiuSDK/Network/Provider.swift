@@ -64,7 +64,25 @@ public class Provider<Target: TargetType>: ProviderType {
             return plugin.prepare(request, target: target)
         }
         plugins.forEach { $0.willSend(preparedRequest, target: target) }
-        let task = client.execute(request: preparedRequest)
+        let task = client.execute(request: preparedRequest).always { [weak self] (result) in
+            switch result {
+            case .success(let response):
+                self?.plugins.forEach { $0.didReceive(.success(response), target: target) }
+            case .failure(let error):
+                self?.plugins.forEach { $0.didReceive(.failure(.httpClientError(error)), target: target) }
+            }
+        }
+//            .do { (future) in
+//
+//            future.whenComplete { (result) in
+//                do {
+//                    let response = try result.get()
+//                    plugins.forEach { $0.didReceive(.success(response), target: target) }
+//                } catch {
+//
+//                }
+//            }
+//        }
         return task
     }
     

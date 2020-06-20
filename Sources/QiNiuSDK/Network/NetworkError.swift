@@ -14,4 +14,5 @@ public enum QiNiuError: Error {
     case jsonEncodingFailed(error: Error)
     case underlying(Swift.Error, Response?)
     case encodableMapping(Swift.Error)
+    case httpClientError(Error)
 }

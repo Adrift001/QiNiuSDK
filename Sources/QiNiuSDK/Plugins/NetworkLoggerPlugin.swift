@@ -74,7 +74,7 @@ private extension NetworkLoggerPlugin {
         }
 
         if let httpMethod = request?.method {
-            output += [format(loggerId, date: date, identifier: "HTTP Request Method", message: httpMethod.rawValue)]
+            output += [format(loggerId, date: date, identifier: "Request Method", message: httpMethod.rawValue)]
         }
         
         if let body = request?.body, isVerbose {
@@ -85,14 +85,16 @@ private extension NetworkLoggerPlugin {
     }
 
     func logNetworkResponse(_ response: Response?, data: Data?, target: TargetType) -> [String] {
-        guard let _ = response else {
+        guard let response = response else {
            return [format(loggerId, date: date, identifier: "Response", message: "Received empty network response for \(target).")]
         }
 
         var output = [String]()
+        
+        output += [format(loggerId, date: date, identifier: "Response StatusCode", message: "\(response.status.code)")]
 
         if let data = data, let stringData = String(data: responseDataFormatter?(data) ?? data, encoding: String.Encoding.utf8), isVerbose {
-            output += [stringData]
+            output += [format(loggerId, date: date, identifier: "Response Body", message: "\(stringData)")]
         }
 
         return output

@@ -46,7 +46,7 @@ public struct URLEncoding: ParameterEncoding {
             let percentEncodedQuery = (urlComponents.percentEncodedQuery.map { $0 + "&" } ?? "") + query(parameters)
             urlComponents.percentEncodedQuery = percentEncodedQuery
             if let url = urlComponents.url {
-                var request = try Request(url: url, method: urlRequest.method, headers: urlRequest.headers, body: urlRequest.body)
+                let request = try Request(url: url, method: urlRequest.method, headers: urlRequest.headers, body: urlRequest.body)
                 #warning("Authorization")
 //                request.headers.add(name: "Authorization", value: "QBox \(Auth.accessToken(path: "\(url.path + "?" + (url.query ?? ""))\n"))")
                 return request

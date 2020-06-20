@@ -8,6 +8,7 @@
 import NIO
 
 public extension EventLoopFuture where Value == Response {
+    
     func mapCodable<T: Codable>(_ type: T.Type) -> EventLoopFuture<T> {
         return self.flatMapResult { (response) -> Result<T, QiNiuError> in
             if var body = response.body, let data = (body.readString(length: body.readableBytes) ?? "").data(using: .utf8) {
@@ -23,5 +24,10 @@ public extension EventLoopFuture where Value == Response {
                 return .failure(QiNiuError.bodyEmpty)
             }
         }
+    }
+    
+    func `do`(handler: (_ eventLoop: EventLoopFuture) -> ()) -> Self {
+        handler(self)
+        return self
     }
 }
