@@ -47,8 +47,6 @@ public struct URLEncoding: ParameterEncoding {
             urlComponents.percentEncodedQuery = percentEncodedQuery
             if let url = urlComponents.url {
                 let request = try Request(url: url, method: urlRequest.method, headers: urlRequest.headers, body: urlRequest.body)
-                #warning("Authorization")
-//                request.headers.add(name: "Authorization", value: "QBox \(Auth.accessToken(path: "\(url.path + "?" + (url.query ?? ""))\n"))")
                 return request
             } else {
                 throw QiNiuError.missingURL
@@ -142,8 +140,6 @@ public struct JSONEncoding: ParameterEncoding {
             if !request.headers.contains(name: "Content-Type") {
                 request.headers.add(name: "Content-Type", value: "application/json")
             }
-            #warning("Authorization")
-//            request.headers.add(name: "Authorization", value: "QBox \(Auth.accessToken(path: "\(urlRequest.url.path)\n"))")
             return request
         } catch {
             throw QiNiuError.jsonEncodingFailed(error: error)
