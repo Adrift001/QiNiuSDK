@@ -13,7 +13,7 @@ public extension Request {
         } catch {
             throw QiNiuError.parameterEncoding(error)
         }
-    } 
+    }
     
     func encoded(encodable: Encodable, encoder: JSONEncoder = JSONEncoder()) throws -> Request {
         do {
