@@ -25,10 +25,3 @@ let auth = Auth.create(accessKey: "xxx", secretKey: "xxx")
 let token = auth.uploadToken(bucket: "xxx")
 print(token)
 ```
-
-## 详细操作
-
-请参考 [Java SDK
-](https://developer.qiniu.com/kodo/sdk/1239/java) 
-
-> 注意: 没有服务器直传部分的功能.
