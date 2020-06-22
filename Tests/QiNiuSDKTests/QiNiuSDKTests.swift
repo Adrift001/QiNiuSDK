@@ -34,8 +34,8 @@ final class BucketTests: BaseTestCase {
             case .success(let arr):
                 buckets = arr
                 print(arr)
-            case .failure(let error):
-                print(error)
+            case .failure(let err):
+                print(err)
             }
             expectation.fulfill()
         }
@@ -51,8 +51,8 @@ final class BucketTests: BaseTestCase {
             switch result {
             case .success(let arr):
                 domains = arr
-            case .failure(let error):
-                print(error)
+            case .failure(let err):
+                print(err)
             }
             expectation.fulfill()
         }
@@ -99,188 +99,250 @@ final class BucketTests: BaseTestCase {
         XCTAssertNil(error)
     }
     
-    func testSetBucketAccess() throws {
+    func test005SetBucketAccess() throws {
+        let expectation = self.expectation(description: "test005SetBucketAccess")
         let task = provider.request(.setBucketAccess("jingxuetao-hello", .private))
+        var error: Error?
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
             case .success(let string):
                 print(string)
-            case .failure(let error):
-                print(error)
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
     }
     
-    func testSetBucketTags() throws {
+    func test006SetBucketTags() throws {
+        let expectation = self.expectation(description: "test006SetBucketTags")
         let task = provider.request(.setBucketTags("jingxuetao-hello", BucketTagsModel(Tags: [BucketTagModel(Key: "key1", Value: "value1")])))
+        var error: Error?
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
-            case .success(let string):
-                print(string)
-            case .failure(let error):
-                print(error)
+            case .success(_):
+                break
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
     }
     
-    func testQueryBucketTags() throws {
+    func test007QueryBucketTags() throws {
+        let expectation = self.expectation(description: "test007QueryBucketTags")
         let task = provider.request(.queryBucketTags("jingxuetao-hello"))
+        var error: Error?
         task.mapCodable(BucketTagsModel.self).whenComplete { (result) in
             switch result {
-            case .success(let string):
-                print(string)
-            case .failure(let error):
-                print(error)
+            case .success(_):
+                break
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
     }
     
-    func testDeleteBucketTags() throws {
+    func test008DeleteBucketTags() throws {
+        let expectation = self.expectation(description: "test008DeleteBucketTags")
         let task = provider.request(.deleteBucketTags("jingxuetao-hello"))
+        var error: Error?
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
             case .success(let string):
                 print(string)
-            case .failure(let error):
-                print(error)
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
     }
     
-    func testUpdateFileStatus() throws {
+    func test009UpdateFileStatus() throws {
+        let expectation = self.expectation(description: "test009UpdateFileStatus")
         let task = provider.request(.updateFileStatus("blog-pic", "1.png", .disable))
+        var error: Error?
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
             case .success(let string):
                 print(string)
-            case .failure(let error):
-                print(error)
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
+        
     }
     
-    func testUpdateFileStoreType() throws {
+    func test101UpdateFileStoreType() throws {
+        let expectation = self.expectation(description: "test101UpdateFileStoreType")
         let task = provider.request(.updateFileStoreType("blog-pic", "1.png", .low))
+        var error: Error?
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
-            case .success(let string):
-                print(string)
-            case .failure(let error):
-                print(error)
+            case .success(_):
+                break
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
+        
     }
     
-    func testUpdateFileLife() throws {
+    func test011UpdateFileLife() throws {
+        let expectation = self.expectation(description: "test011UpdateFileLife")
         let task = provider.request(.updateFileLife("blog-pic", "1.png", 100))
+        var error: Error?
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
-            case .success(let string):
-                print(string)
-            case .failure(let error):
-                print(error)
+            case .success(_):
+                break
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
+        
     }
     
-    func testUpdateFileInfo() throws {
+    func test012QueryFileMetaInfo() throws {
+        let expectation = self.expectation(description: "test012QueryFileMetaInfo")
         let task = provider.request(.queryFileMetaInfo("blog-pic", "1.png"))
+        var error: Error?
         task.mapCodable(FileInfo.self).whenComplete { (result) in
             switch result {
-            case .success(let string):
-                print(string)
-            case .failure(let error):
-                print(error)
+            case .success(_):
+                break
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
+        
     }
     
-    func testRenameFile() throws {
+    func test013RenameFile() throws {
+        let expectation = self.expectation(description: "test013RenameFile")
         let task = provider.request(.renameFile("blog-pic", "1.png", "blog-pic", "1111111111.png", true))
+        var error: Error?
         task.mapCodable(FileInfo.self).whenComplete { (result) in
             switch result {
-            case .success(let string):
-                print(string)
-            case .failure(let error):
-                print(error)
+            case .success(_):
+                break
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
+        
     }
     
-    func testPrefetchFile() throws {
+    func test014PrefetchFile() throws {
+        let expectation = self.expectation(description: "test014PrefetchFile")
         let task = provider.request(.prefetchFile("blog-pic", "1111111111.png"))
+        var error: Error?
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
-            case .success(let string):
-                print(string)
-            case .failure(let error):
-                print(error)
+            case .success(_):
+                break
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
+        
     }
     
     #warning("待验证")
-    func testUpdateMetaInfo() throws {
+    func test015UpdateMetaInfo() throws {
+        let expectation = self.expectation(description: "test015UpdateMetaInfo")
         let metaInfo = ResourceMetaInfo(bucketName: "blog-pic", fileName: "1111111111.png", mimeType: "jpg", metaKey: "jpg_key", metaValue: "jpg_value", cond: ResourceMetaInfoCond(hash: "", mime: "image/jpg", fsize: 0, putTime: ""))
         print(metaInfo.cond)
         let task = provider.request(.updateFileMetaInfo(metaInfo))
+        var error: Error?
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
-            case .success(let string):
-                print(string)
-            case .failure(let error):
-                print(error)
+            case .success(_):
+                break
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
+        
     }
     
-    func testQuerySource() throws {
+    func test016QuerySource() throws {
+        let expectation = self.expectation(description: "test016QuerySource")
         let task = provider.request(.querySource("blog-pic", "", "10", "", ""))
+        var error: Error?
         task.mapCodable(QuerySource.self).whenComplete { (result) in
             switch result {
-            case .success(let model):
-                do {
-                    let encoder = JSONEncoder()
-                    let data = try encoder.encode(model)
-                    print(String(data: data, encoding: .utf8))
-                } catch {
-                    print(error)
-                }
-            case .failure(let error):
-                print(error)
+            case .success(_):
+                break
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
+        
     }
     
-    func testBatchSourceMetaInfo() throws {
+    func test017BatchSourceMetaInfo() throws {
+        let expectation = self.expectation(description: "test017BatchSourceMetaInfo")
         let task = provider.request(.batchFileMetaInfo("blog-pic", ["1111111111.png"]))
+        var error: Error?
         task.mapCodable(QuerySource.self).whenComplete { (result) in
             switch result {
-            case .success(let model):
-                do {
-                    let encoder = JSONEncoder()
-                    let data = try encoder.encode(model)
-                    print(String(data: data, encoding: .utf8))
-                } catch {
-                    print(error)
-                }
-            case .failure(let error):
-                print(error)
+            case .success(_):
+                break
+            case .failure(let err):
+                error = err
+                print(err)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
+        
     }
     
     func testAuth() throws {
@@ -293,7 +355,6 @@ final class BucketTests: BaseTestCase {
         print(test)
         
     }
-    
     
 }
 
