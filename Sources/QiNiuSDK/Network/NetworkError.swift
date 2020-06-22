@@ -15,4 +15,5 @@ public enum QiNiuError: Error {
     case underlying(Swift.Error, Response?)
     case encodableMapping(Swift.Error)
     case httpClientError(Error)
+    case message(String)
 }

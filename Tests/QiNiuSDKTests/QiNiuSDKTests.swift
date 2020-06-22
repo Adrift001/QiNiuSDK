@@ -12,8 +12,10 @@ import XCTest
 @testable import NIOHTTP1
 @testable import NIO
 
-final class BucketTests: XCTestCase {
-    let timeout: TimeInterval = 5
+final class BucketTests: BaseTestCase {
+    
+    let group = DispatchGroup()
+    
     override func setUp() {
         super.setUp()
         let environment = ProcessInfo.processInfo.environment
@@ -23,56 +25,78 @@ final class BucketTests: XCTestCase {
     
     let provider = Provider<BucketProvider>(plugins: [NetworkLoggerPlugin(verbose: true), AuthorizationPlugin()])
     
-    func testBuckets() throws {
+    func test001Buckets() throws {
+        let expectation = self.expectation(description: "test001Buckets")
         let task = provider.request(.buckets)
+        var buckets: [String] = []
         task.mapCodable([String].self).whenComplete { (result) in
             switch result {
             case .success(let arr):
+                buckets = arr
                 print(arr)
             case .failure(let error):
                 print(error)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssert(!buckets.isEmpty)
     }
     
-    func testBucketSpaceDomainName() throws {
+    func test002BucketSpaceDomainName() throws {
+        let expectation = self.expectation(description: "test002BucketSpaceDomainName")
         let task = provider.request(.bucketSpaceDomainName("blog-pic"))
+        var domains: [String] = []
         task.mapCodable([String].self).whenComplete { (result) in
             switch result {
             case .success(let arr):
-                print(arr)
+                domains = arr
             case .failure(let error):
                 print(error)
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssert(!domains.isEmpty)
     }
     
-    func testCreateBucket() throws {
+    func test003CreateBucket() throws {
+        let expectation = self.expectation(description: "test003CreateBucket")
         let task = provider.request(.createBucket("jingxuetao-hello", .z0))
-        task.mapCodable(String.self).whenComplete { (result) in
-            switch result {
-            case .success(let string):
-                print(string)
-            case .failure(let error):
-                print(error)
-            }
-        }
-        try task.wait()
-    }
-    
-    func testDeleteBucket() throws {
-        let task = provider.request(.deleteBucket("jingxuetao-hello"))
+        var error: Error?
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
             case .success(let string):
                 print(string)
-            case .failure(let error):
-                print(error)
+            case .failure(let err):
+                print(err)
+                error = err
             }
+            expectation.fulfill()
         }
-        try task.wait()
+        
+        waitForExpectations(timeout: timeout, handler: nil)
+        
+        XCTAssertNil(error)
+        
+    }
+    
+    func test004DeleteBucket() throws {
+        let expectation = self.expectation(description: "test004DeleteBucket")
+        let task = provider.request(.deleteBucket("jingxuetao-hello"))
+        var error: Error?
+        task.mapCodable(EmptyModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let err):
+                error = err
+                print(err)
+            }
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
     }
     
     func testSetBucketAccess() throws {
