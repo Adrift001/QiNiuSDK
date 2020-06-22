@@ -1,5 +1,9 @@
 name: Swift
 
+env:
+  AK: ${{ secrets.AK }}
+  SK: ${{ secrets.SK }}
+
 on:
   push:
     branches: [ master ]
@@ -10,9 +14,7 @@ jobs:
   build:
 
     runs-on: macos-latest
-    env:
-      AK: $AK
-      SK: $SK
+
     steps:
     - uses: actions/checkout@v2
     - name: Build
