@@ -18,19 +18,9 @@ final class BucketTests: BaseTestCase {
     
     override func setUp() {
         super.setUp()
-//        let environment = ProcessInfo.processInfo.environment
-//        Keys.accessKey = environment["AK"] ?? ""
-//        Keys.secretKey = environment["SK"] ?? ""
-//        print(String(cString: getenv("AK")))
-        
-        Keys.accessKey = String(cString: getenv("AK"))
-        Keys.secretKey = String(cString: getenv("SK"))
-        print("==================")
-        print("==================")
-        print(Keys.accessKey)
-        print(Keys.secretKey)
-        print("==================")
-        print("==================")
+        let environment = ProcessInfo.processInfo.environment
+        Keys.accessKey = environment["AK"] ?? ""
+        Keys.secretKey = environment["SK"] ?? ""
     }
     
     let provider = Provider<BucketProvider>(plugins: [NetworkLoggerPlugin(verbose: true), AuthorizationPlugin()])
