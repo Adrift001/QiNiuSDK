@@ -1,6 +1,6 @@
 # QiNiuSDK
 
-![Travis (.org)](https://img.shields.io/travis/Adrift001/QiNiuSDK)
+![Swift](https://github.com/Adrift001/QiNiuSDK/workflows/Swift/badge.svg?branch=master)
 
 生成七牛上传凭证
 

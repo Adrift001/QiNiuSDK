@@ -13,9 +13,7 @@ import XCTest
 @testable import NIO
 
 final class BucketTests: BaseTestCase {
-    
-    let group = DispatchGroup()
-    
+        
     override func setUp() {
         super.setUp()
         let environment = ProcessInfo.processInfo.environment
@@ -326,6 +324,7 @@ final class BucketTests: BaseTestCase {
         
     }
     
+    #warning("崩溃")
     func test017BatchSourceMetaInfo() throws {
         let expectation = self.expectation(description: "test017BatchSourceMetaInfo")
         let task = provider.request(.batchFileMetaInfo("blog-pic", ["1111111111.png"]))
