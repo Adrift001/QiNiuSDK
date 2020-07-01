@@ -33,7 +33,7 @@ public enum BucketProvider {
     /// 查询文件元信息
     case queryFileMetaInfo(String, String)
     #warning("待测试")
-    ///更新文件元信息,
+    /// 资源元信息修改
     case updateFileMetaInfo(ResourceMetaInfo)
     /// 资源移动／重命名
     case renameFile(String, String, String, String, Bool)
@@ -60,11 +60,11 @@ public enum BucketProvider {
 extension BucketProvider: TargetType {
     public var baseURL: URL {
         switch self {
-        case .buckets:
+        case .buckets, .updateFileStatus, .updateFileMetaInfo:
             return URL(string: "https://rs.qbox.me/")!
         case .bucketSpaceDomainName:
             return URL(string: "https://api.qiniu.com/")!
-        case .createBucket, .deleteBucket, .updateFileStatus, .updateFileStoreType, .updateFileLife, .queryFileMetaInfo, .updateFileMetaInfo, .renameFile, .copyFile, .deleteFile, .batchFileMetaInfo:
+        case .createBucket, .deleteBucket, .updateFileStoreType, .updateFileLife, .queryFileMetaInfo, .renameFile, .copyFile, .deleteFile, .batchFileMetaInfo:
             return URL(string: "https://rs.qiniu.com")!
         case .setBucketAccess, .setBucketTags, .queryBucketTags, .deleteBucketTags:
             return URL(string: "https://uc.qbox.me")!

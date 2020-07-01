@@ -12,23 +12,35 @@ public extension EventLoopFuture where Value == Response {
     @discardableResult
     func mapCodable<T: Codable>(_ type: T.Type) -> EventLoopFuture<T> {
         return self.flatMapResult { (response) -> Result<T, QiNiuError> in
-            if var body = response.body, let data = (body.readString(length: body.readableBytes) ?? "").data(using: .utf8) {
-                let decoder = JSONDecoder()
-                do {
-                    
-                    guard response.status == .ok else {
-                        let error = try decoder.decode(ErrorModel.self, from: data)
-                        return .failure(.message(error.error))
+
+            let decoder = JSONDecoder()
+            if response.status == .ok {
+                if var body = response.body, let data = (body.readString(length: body.readableBytes) ?? "").data(using: .utf8) {
+                    do {
+                        let object = try decoder.decode(T.self, from: data)
+                        return .success(object)
+                    } catch {
+                        return .failure(QiNiuError.decodeFailed)
                     }
-                    
-                    let array = try decoder.decode(T.self, from: data)
-                    return .success(array)
-                } catch {
-                    print(error)
-                    return .failure(QiNiuError.decodeFailed)
+                } else {
+                    do {
+                        let object = try decoder.decode(T.self, from: "{}".data(using: .utf8)!)
+                        return .success(object)
+                    } catch {
+                        return .failure(QiNiuError.decodeFailed)
+                    }
                 }
             } else {
-                return .failure(QiNiuError.bodyEmpty)
+                if var body = response.body, let data = (body.readString(length: body.readableBytes) ?? "").data(using: .utf8) {
+                    do {
+                        let error = try decoder.decode(ErrorModel.self, from: data)
+                        return .failure(.message(error.error))
+                    } catch {
+                        return .failure(QiNiuError.decodeFailed)
+                    }
+                } else {
+                    return .failure(QiNiuError.bodyEmpty)
+                }
             }
         }
     }

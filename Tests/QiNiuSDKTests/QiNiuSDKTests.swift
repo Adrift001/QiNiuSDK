@@ -171,7 +171,7 @@ final class BucketTests: BaseTestCase {
     
     func test009UpdateFileStatus() throws {
         let expectation = self.expectation(description: "test009UpdateFileStatus")
-        let task = provider.request(.updateFileStatus("blog-pic", "1.png", .disable))
+        let task = provider.request(.updateFileStatus("blog-pic", "1111111111.png", .enable))
         var error: Error?
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
@@ -283,10 +283,9 @@ final class BucketTests: BaseTestCase {
         
     }
     
-    #warning("待验证")
     func test015UpdateMetaInfo() throws {
         let expectation = self.expectation(description: "test015UpdateMetaInfo")
-        let metaInfo = ResourceMetaInfo(bucketName: "blog-pic", fileName: "1111111111.png", mimeType: "jpg", metaKey: "jpg_key", metaValue: "jpg_value", cond: ResourceMetaInfoCond(hash: "", mime: "image/jpg", fsize: 0, putTime: ""))
+        let metaInfo = ResourceMetaInfo(bucketName: "blog-pic", fileName: "11.jpg", mimeType: "image/jpeg", metaKey: "jpg_key", metaValue: "jpg_value", cond: ResourceMetaInfoCond(hash: "", mime: "image/jpeg", fsize: 0, putTime: ""))
         print(metaInfo.cond)
         let task = provider.request(.updateFileMetaInfo(metaInfo))
         var error: Error?

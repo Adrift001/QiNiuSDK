@@ -39,6 +39,9 @@ public struct ResourceMetaInfo: Codable {
         if !cond.putTime.isEmpty {
             result += "putTime=\(cond.putTime)&"
         }
+        print("==========")
+        print(String(result.dropLast()))
+        print("==========")
         if !result.isEmpty {
             return Base64FS.encodeString(str: String(result.dropLast()))
         }
