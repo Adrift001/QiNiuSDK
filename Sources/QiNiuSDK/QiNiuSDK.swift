@@ -299,8 +299,8 @@ public class QiNiuSDK {
     ///   - bucketName: 空间名称
     ///   - fileNames: 文件名称
     ///   - completionHandler: 批量列举回调
-    public func batchFileMetaInfo(bucketName: String, fileNames: [String], completionHandler: @escaping (Result<QuerySource, Error>) -> Void) {
-        let task = provider.request(.batchFileMetaInfo(bucketName, fileNames))
+    public func batchFileMetaInfo(models: [BatchModel], completionHandler: @escaping (Result<QuerySource, Error>) -> Void) {
+        let task = provider.request(.batchFileMetaInfo(models))
         task.mapCodable(QuerySource.self).whenComplete { (result) in
             switch result {
             case .success(let model):

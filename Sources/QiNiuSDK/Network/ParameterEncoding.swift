@@ -52,7 +52,8 @@ public struct URLEncoding: ParameterEncoding {
                 throw QiNiuError.missingURL
             }
         } else {
-            throw QiNiuError.missingURL
+            let request = try Request(url: urlRequest.url, method: urlRequest.method, headers: urlRequest.headers, body: urlRequest.body)
+            return request
         }
     }
     

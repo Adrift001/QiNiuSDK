@@ -323,10 +323,9 @@ final class BucketTests: BaseTestCase {
         
     }
     
-    #warning("崩溃")
     func test017BatchSourceMetaInfo() throws {
         let expectation = self.expectation(description: "test017BatchSourceMetaInfo")
-        let task = provider.request(.batchFileMetaInfo("blog-pic", ["1111111111.png"]))
+        let task = provider.request(.batchFileMetaInfo([BatchModel(type: .stat, bucketName: "blog-pic", fileName: "11.jpg")]))
         var error: Error?
         task.mapCodable(QuerySource.self).whenComplete { (result) in
             switch result {

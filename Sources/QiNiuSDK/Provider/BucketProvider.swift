@@ -32,7 +32,7 @@ public enum BucketProvider {
     
     /// 查询文件元信息
     case queryFileMetaInfo(String, String)
-    #warning("待测试")
+    
     /// 资源元信息修改
     case updateFileMetaInfo(ResourceMetaInfo)
     /// 资源移动／重命名
@@ -48,7 +48,7 @@ public enum BucketProvider {
     case prefetchFile(String, String)
     
     /// 批量查询元数据
-    case batchFileMetaInfo(String, [String])
+    case batchFileMetaInfo([BatchModel])
     
     /// 文件直传
     /// 创建块
@@ -60,11 +60,11 @@ public enum BucketProvider {
 extension BucketProvider: TargetType {
     public var baseURL: URL {
         switch self {
-        case .buckets, .updateFileStatus, .updateFileMetaInfo:
+        case .buckets, .updateFileStatus, .updateFileMetaInfo, .batchFileMetaInfo:
             return URL(string: "https://rs.qbox.me/")!
         case .bucketSpaceDomainName:
             return URL(string: "https://api.qiniu.com/")!
-        case .createBucket, .deleteBucket, .updateFileStoreType, .updateFileLife, .queryFileMetaInfo, .renameFile, .copyFile, .deleteFile, .batchFileMetaInfo:
+        case .createBucket, .deleteBucket, .updateFileStoreType, .updateFileLife, .queryFileMetaInfo, .renameFile, .copyFile, .deleteFile:
             return URL(string: "https://rs.qiniu.com")!
         case .setBucketAccess, .setBucketTags, .queryBucketTags, .deleteBucketTags:
             return URL(string: "https://uc.qbox.me")!
@@ -155,16 +155,19 @@ extension BucketProvider: TargetType {
             let encodedPrefix = Base64FS.encodeString(str: prefix)
             let encodedDelimiter = Base64FS.encodeString(str: delimiter)
             return .requestParameters(parameters: ["bucket": bucketName, "marker": marker, "limit": limit, "prefix": encodedPrefix, "delimiter": encodedDelimiter], encoding: URLEncoding.queryString)
-        case .batchFileMetaInfo(let bucketName, let fileNames):
-            var result = ""
-            for (index, fileName) in fileNames.enumerated() {
-                if index == fileNames.count - 1 {
-                    result += "op=stat/\(Base64FS.encodeString(str: "\(bucketName):\(fileName)"))"
+        case .batchFileMetaInfo(let models):
+            var operation = ""
+            for (index, model) in models.enumerated() {
+                if model.type == .stat || model.type == .delete || model.type == .restoreAr {
+                    let encodedEntryURI = Base64FS.encodeString(str: "\(model.bucketName):\(model.fileName)")
+                    operation += "op=/\(model.type.rawValue)/\(encodedEntryURI)"
                 } else {
-                    result += "op=stat/\(Base64FS.encodeString(str: "\(bucketName):\(fileName)"))&"
+                    let fromEncodedEntryURI = Base64FS.encodeString(str: "\(model.fromBucketName):\(model.fromFileName)")
+                    let toEncodedEntryURI = Base64FS.encodeString(str: "\(model.toBucketName):\(model.toFileName)")
+                    operation += "op=/\(model.type.rawValue)/\(fromEncodedEntryURI)\(toEncodedEntryURI)/force/\(model.force)"
                 }
             }
-            return .requestCompositeData(bodyData: result.data(using: .utf8)!, urlParameters: [:])
+            return .requestCompositeData(bodyData: operation.data(using: .utf8)!, urlParameters: [:])
             
         }
     }
