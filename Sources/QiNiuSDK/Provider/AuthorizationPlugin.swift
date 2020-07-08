@@ -15,10 +15,6 @@ public final class AuthorizationPlugin: PluginType {
         let query = request.url.query == nil ? "" : "?\(request.url.query ?? "")"
         let host = request.host
         let contentType = request.headers["Content-Type"].first ?? ""
-//        request.body = Body.data("".data(using: .utf8)!)
-        
-        #warning("Can't get request body")
-        
         let signingStr = """
         \(method) \(path)\(query)
         Host: \(host)
