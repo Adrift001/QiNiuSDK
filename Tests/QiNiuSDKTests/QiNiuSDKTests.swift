@@ -76,25 +76,6 @@ final class BucketTests: BaseTestCase {
         waitForExpectations(timeout: timeout, handler: nil)
         
         XCTAssertNil(error)
-        
-    }
-    
-    func test004DeleteBucket() throws {
-        let expectation = self.expectation(description: "test004DeleteBucket")
-        let task = provider.request(.deleteBucket("jingxuetao-hello"))
-        var error: Error?
-        task.mapCodable(EmptyModel.self).whenComplete { (result) in
-            switch result {
-            case .success(let string):
-                print(string)
-            case .failure(let err):
-                error = err
-                print(err)
-            }
-            expectation.fulfill()
-        }
-        waitForExpectations(timeout: timeout, handler: nil)
-        XCTAssertNil(error)
     }
     
     func test005SetBucketAccess() throws {
@@ -339,19 +320,24 @@ final class BucketTests: BaseTestCase {
         }
         waitForExpectations(timeout: timeout, handler: nil)
         XCTAssertNil(error)
-        
     }
     
-    func testAuth() throws {
-        let str = Base64FS.encodeString(str: "qiniuphotos:gogopher.jpg")
-        print(str)
-        let str1 = Base64FS.decodeString(str: "ZnNpemU9Ng==")
-        print(str1)
-        
-        let test = 14408200048442046
-        print(test)
-        
+    func test004DeleteBucket() throws {
+        let expectation = self.expectation(description: "test004DeleteBucket")
+        let task = provider.request(.deleteBucket("jingxuetao-hello"))
+        var error: Error?
+        task.mapCodable(EmptyModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let string):
+                print(string)
+            case .failure(let err):
+                error = err
+                print(err)
+            }
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
     }
-    
 }
 
