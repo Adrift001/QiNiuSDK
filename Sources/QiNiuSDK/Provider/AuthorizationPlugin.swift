@@ -23,11 +23,6 @@ public final class AuthorizationPlugin: PluginType {
 
         """
         request.headers.add(name: "Authorization", value: "Qiniu \(Auth.accessToken(signingStr: signingStr))")
-        print("===================")
-        print("===================")
-        print(signingStr)
-        print("===================")
-        print("===================")
         return request
     }
 }

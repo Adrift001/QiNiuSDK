@@ -157,7 +157,7 @@ extension BucketProvider: TargetType {
             return .requestParameters(parameters: ["bucket": bucketName, "marker": marker, "limit": limit, "prefix": encodedPrefix, "delimiter": encodedDelimiter], encoding: URLEncoding.queryString)
         case .batchFileMetaInfo(let models):
             var operation = ""
-            for (index, model) in models.enumerated() {
+            for (_, model) in models.enumerated() {
                 if model.type == .stat || model.type == .delete || model.type == .restoreAr {
                     let encodedEntryURI = Base64FS.encodeString(str: "\(model.bucketName):\(model.fileName)")
                     operation += "op=/\(model.type.rawValue)/\(encodedEntryURI)"
