@@ -8,9 +8,18 @@
 import Foundation
 import AsyncHTTPClient
 
+public class ConfigHelper {
+    
+    func rsHost() -> String {
+        return "https://rs.qiniu.com"
+    }
+    
+}
+
 public class BucketManager {
     
     let client: HTTPClient
+    let config = ConfigHelper()
     
     public init(client: HTTPClient) {
         self.client = client
@@ -24,8 +33,35 @@ public class BucketManager {
     }
     
     /// 获取账号下所有空间名称列表
-    func buckets() {
-        
+    func buckets(completionHander: @escaping (Result<[String], Error>) -> Void) {
+        let url = String(format: "%@/buckets", config.rsHost())
+        do {
+            let response = try get(url: url)
+            response.whenComplete { (result) in
+                switch result {
+                case .success(let res):
+                    if res.status == .ok {
+                        do {
+                            let object = try res.toObject([String].self)
+                            completionHander(.success(object))
+                        } catch {
+                            completionHander(.failure(error))
+                        }
+                    } else {
+//                        do {
+//                            let object = try res.toObject(ErrorModel.self)
+//                            completionHander(.failure(QiNiuError.bodyEmpty))
+//                        } catch {
+//                            completionHander(.failure(error))
+//                        }
+                    }
+                case .failure(let error):
+                    completionHander(.failure(error))
+                }
+            }
+        } catch {
+            completionHander(.failure(error))
+        }
     }
     
     /// 创建空间
@@ -114,4 +150,55 @@ public class BucketManager {
     func rename(bucketName: String, oldFileKey: String, newFileKey: String, force: Bool = false) {
         
     }
+    
+    /// 复制文件，要求空间在同一账号下，可以设置force参数为true强行覆盖空间已有同名文件
+    /// - Parameters:
+    ///   - fromBucket: 源空间名称
+    ///   - fromFileKey: 源文件名称
+    ///   - toBucket: 目的空间名称
+    ///   - toFileKey: 目的文件名称
+    ///   - force: 强制覆盖空间中已有同名（和 toFileKey 相同）的文件
+    func copy(fromBucket: String, fromFileKey: String, toBucket: String, toFileKey: String, force: Bool = false) {
+        
+    }
+    
+    /// 移动文件，要求空间在同一账号下
+    /// - Parameters:
+    ///   - fromBucket: 源空间名称
+    ///   - fromFileKey: 源文件名称
+    ///   - toBucket: 目的空间名称
+    ///   - toFileKey: 目的文件名称
+    ///   - force: 强制覆盖空间中已有同名（和 toFileKey 相同）的文件
+    func move(fromBucket: String, fromFileKey: String, toBucket: String, toFileKey: String, force: Bool = false) {
+        
+    }
+    
+    func get(url: String) throws -> EventLoopFuture<Response> {
+        let headers = HTTPHeaders()
+        var request = try HTTPClient.Request(url: url, method: .GET, headers: headers, body: nil)
+        signRequest(request: &request)
+        
+        return client.execute(request: request)
+    }
+    
+    func signRequest( request: inout Request) {
+        let method = request.method
+        let path = request.url.path
+        let query = request.url.query == nil ? "" : "?\(request.url.query ?? "")"
+        let host = request.host
+        let contentType = request.headers["Content-Type"].first ?? ""
+        var signingStr = """
+        \(method) \(path)\(query)
+        Host: \(host)
+        """
+        if !contentType.isEmpty {
+            signingStr.append("\nContent-Type: \(contentType)")
+        }
+        signingStr.append("\n\n")
+        print("==========signingStr==========")
+        print(signingStr)
+        print("==========signingStr==========")
+        request.headers.add(name: "Authorization", value: "Qiniu \(Auth.accessToken(signingStr: signingStr))")
+    }
+    
 }

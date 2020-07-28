@@ -58,6 +58,7 @@ public enum BucketProvider {
 }
 
 extension BucketProvider: TargetType {
+    
     public var baseURL: URL {
         switch self {
         case .buckets, .updateFileStatus, .updateFileMetaInfo, .batchFileMetaInfo:
@@ -169,6 +170,21 @@ extension BucketProvider: TargetType {
             }
             return .requestCompositeData(bodyData: operation.data(using: .utf8)!, urlParameters: [:])
             
+        }
+    }
+    
+    public var body: Data? {
+        switch self {
+        case .setBucketTags(_, let tags):
+            let encoder = JSONEncoder()
+            do {
+                let data = try encoder.encode(tags)
+                return data
+            } catch {
+                return nil
+            }
+        default:
+            return nil
         }
     }
     

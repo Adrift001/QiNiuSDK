@@ -3,6 +3,7 @@ import Foundation
 
 /// Logs network activity (outgoing requests and incoming responses).
 public final class NetworkLoggerPlugin: PluginType {
+    
     fileprivate let loggerId = "QiNiuSDK_Logger"
     fileprivate let dateFormatString = "dd/MM/yyyy HH:mm:ss"
     fileprivate let dateFormatter = DateFormatter()

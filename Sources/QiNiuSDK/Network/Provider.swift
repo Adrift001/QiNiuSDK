@@ -57,7 +57,7 @@ public class Provider<Target: TargetType>: ProviderType {
     }
     
     @discardableResult
-    public func request(_ target: Target) -> EventLoopFuture<Response>  {
+    public func request(_ target: Target) -> EventLoopFuture<Response> {
         let endpoint = self.endpoint(target)
         let request = try! endpoint.urlRequest()
         let preparedRequest = plugins.reduce(request) { (request, plugin) -> Request in
@@ -94,7 +94,8 @@ public extension Provider {
             url: URL(target: target).absoluteString,
             method: target.method,
             task: target.task,
-            httpHeaderFields: target.headers
+            httpHeaderFields: target.headers,
+            body: target.body
         )
     }
 }

@@ -19,4 +19,6 @@ public protocol TargetType {
     var task: Task { get }
     
     var headers: [String: String]? { get }
+    
+    var body: Data? { get }
 }

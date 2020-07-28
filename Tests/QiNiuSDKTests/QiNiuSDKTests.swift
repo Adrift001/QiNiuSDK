@@ -80,7 +80,7 @@ final class BucketTests: BaseTestCase {
     
     func test005SetBucketAccess() throws {
         let expectation = self.expectation(description: "test005SetBucketAccess")
-        let task = provider.request(.setBucketAccess("jingxuetao-hello", .private))
+        let task = provider.request(.setBucketAccess("jingxuetao-hello", .public))
         var error: Error?
         task.mapCodable(EmptyModel.self).whenComplete { (result) in
             switch result {
