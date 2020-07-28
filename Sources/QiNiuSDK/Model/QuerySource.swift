@@ -5,12 +5,12 @@
 //  Created by swifter on 2019/11/19.
 //
 
-public struct QuerySource: Codable {
+public class QuerySource: Codable {
     var marker: String
     var items: [QuerySourceItem]
 }
 
-public struct QuerySourceItem: Codable {
+public class QuerySourceItem: Codable {
     var key: String
     var hash: String
     var fsize: Int

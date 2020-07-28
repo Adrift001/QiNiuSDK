@@ -15,7 +15,7 @@ public enum BatchOperationType: String {
     case restoreAr
 }
 
-public struct BatchModel {
+public class BatchModel {
     var type = BatchOperationType.stat
     var bucketName = ""
     var fileName = ""

@@ -6,7 +6,7 @@
 //
 
 
-public struct FileInfo: Codable {
+public class FileInfo: Codable {
     var fsize: Int
     var hash: String
     var mimeType: String

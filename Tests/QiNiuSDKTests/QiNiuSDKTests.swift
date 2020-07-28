@@ -114,6 +114,7 @@ final class BucketTests: BaseTestCase {
         XCTAssertNil(error)
     }
     
+    #warning("存在body为空的情况")
     func test007QueryBucketTags() throws {
         let expectation = self.expectation(description: "test007QueryBucketTags")
         let task = provider.request(.queryBucketTags("jingxuetao-hello"))
@@ -333,6 +334,25 @@ final class BucketTests: BaseTestCase {
             case .failure(let err):
                 error = err
                 print(err)
+            }
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: timeout, handler: nil)
+        XCTAssertNil(error)
+    }
+    
+    func testUpload() throws {
+        let expectation = self.expectation(description: "testUpload")
+        let auth = Auth.create()
+        let token = auth.uploadToken(bucket: "jingxuetao-hello", key: "filename.txt")
+        let task = provider.request(.upload(.ec1, "key", token, "filename.txt", "你好,世界".data(using: .utf8)!))
+        var error: Error?
+        task.mapCodable(EmptyModel.self).whenComplete { (result) in
+            switch result {
+            case .success(let model):
+                print(model)
+            case .failure(let err):
+                error = err
             }
             expectation.fulfill()
         }

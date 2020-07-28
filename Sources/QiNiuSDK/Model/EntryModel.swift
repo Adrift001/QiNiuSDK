@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct EntryModel: Codable {
+public class EntryModel: Codable {
     
     private let bucketName: String
     private let fileName: String

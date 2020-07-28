@@ -50,7 +50,9 @@ public enum BucketProvider {
     /// 批量查询元数据
     case batchFileMetaInfo([BatchModel])
     
-    /// 文件直传
+    /// 文件直传, 服务器域名  resource_key, token, fileName, data
+    case upload(UploadServer, String, String, String, Data)
+    
     /// 创建块
     /// 上传片
     /// 追加文件
@@ -73,6 +75,8 @@ extension BucketProvider: TargetType {
             return URL(string: "https://iovip.qbox.me")!
         case .querySource:
             return URL(string: "https://rsf.qbox.me")!
+        case .upload(let url,_,_,_,_):
+            return URL(string: url.rawValue)!
         }
     }
     
@@ -124,12 +128,14 @@ extension BucketProvider: TargetType {
             return "list"
         case .batchFileMetaInfo:
             return "batch"
+        case .upload:
+            return ""
         }
     }
     
     public var method: HTTPMethod {
         switch self {
-        case .buckets, .createBucket, .deleteBucket, .setBucketAccess, .updateFileStatus, .queryFileMetaInfo, .updateFileLife, .updateFileStoreType, .updateFileMetaInfo, .deleteFile, .renameFile, .copyFile, .prefetchFile, .batchFileMetaInfo:
+        case .buckets, .createBucket, .deleteBucket, .setBucketAccess, .updateFileStatus, .queryFileMetaInfo, .updateFileLife, .updateFileStoreType, .updateFileMetaInfo, .deleteFile, .renameFile, .copyFile, .prefetchFile, .batchFileMetaInfo, .upload:
             return .POST
         case .bucketSpaceDomainName, .queryBucketTags, .querySource:
             return .GET
@@ -169,7 +175,12 @@ extension BucketProvider: TargetType {
                 }
             }
             return .requestCompositeData(bodyData: operation.data(using: .utf8)!, urlParameters: [:])
-            
+        case .upload(_, let key, let token, let fileName, let data):
+            return .requestCompositeData(bodyData: data, urlParameters: [
+                "resource_key": key,
+                "upload_token": token,
+                "fileName": fileName,
+            ])
         }
     }
     
@@ -192,6 +203,8 @@ extension BucketProvider: TargetType {
         switch self {
         case .setBucketTags:
             return jsonEncodingHeaders()
+        case .upload:
+            return formDataHeaders()
         default:
             return urlEncodingHeaders()
         }

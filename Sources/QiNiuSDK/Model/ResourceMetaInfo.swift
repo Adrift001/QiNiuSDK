@@ -5,13 +5,22 @@
 //  Created by 荆学涛 on 2019/11/18.
 //
 
-public struct ResourceMetaInfo: Codable {
+public class ResourceMetaInfo: Codable {
     var bucketName: String
     var fileName: String
     var mimeType: String
     var metaKey: String
     var metaValue: String
     var cond: ResourceMetaInfoCond
+    
+    init(bucketName: String, fileName: String, mimeType: String, metaKey: String, metaValue: String, cond: ResourceMetaInfoCond) {
+        self.bucketName = bucketName
+        self.fileName = fileName
+        self.mimeType = mimeType
+        self.metaKey = metaKey
+        self.metaValue = metaValue
+        self.cond = cond
+    }
     
     var encodedEntryUri: String {
         return Base64FS.encodeString(str: "\(bucketName):\(fileName)")
@@ -49,9 +58,15 @@ public struct ResourceMetaInfo: Codable {
     }
 }
 
-public struct ResourceMetaInfoCond: Codable {
+public class ResourceMetaInfoCond: Codable {
     var hash = ""
     var mime = ""
     var fsize = 0
     var putTime = ""
+    init(hash: String, mime: String, fsize: Int, putTime: String) {
+        self.hash = hash
+        self.mime = mime
+        self.fsize = fsize
+        self.putTime = putTime
+    }
 }

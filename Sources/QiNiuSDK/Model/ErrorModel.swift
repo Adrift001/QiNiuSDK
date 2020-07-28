@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ErrorModel: Codable {
+public class ErrorModel: Codable {
     var error = ""
     init(error: String) {
         self.error = error
