@@ -5,6 +5,8 @@
 //  Created by 荆学涛 on 2019/8/18.
 //
 
+import Foundation
+
 public enum BucketProvider {
     /// 获取 Bucket 列表
     case buckets
@@ -176,11 +178,14 @@ extension BucketProvider: TargetType {
             }
             return .requestCompositeData(bodyData: operation.data(using: .utf8)!, urlParameters: [:])
         case .upload(_, let key, let token, let fileName, let data):
-            return .requestCompositeData(bodyData: data, urlParameters: [
+            let params: [String: Any] = [
                 "resource_key": key,
                 "upload_token": token,
                 "fileName": fileName,
-            ])
+                "fileBinaryData": data
+            ]
+            let data = try! JSONSerialization.data(withJSONObject: params, options: .prettyPrinted)
+            return .requestCompositeData(bodyData: data, urlParameters: [:])
         }
     }
     
