@@ -1,313 +1,191 @@
 //
-//  QiNiuSDK.swift
-//  QiNiuSDK
+//  File.swift
+//  
 //
-//  Created by swifter on 2020/1/9.
+//  Created by swifter on 2020/7/31.
 //
 
-import Foundation
+import Vapor
 
-public class QiNiuSDK {
+public struct QiNiuSDK {
     
-    public static let shared = QiNiuSDK()
+    public let application: Application
     
-    let provider = Provider<BucketProvider>()
-    
-    //MARK: - 空间
-    /// 获取列表名称
-    /// - Parameter completionHandler: 获取列表名称回调
-    public func bucket(completionHandler: @escaping (Result<[String], Error>) -> Void) {
-        let task = provider.request(.buckets)
-        task.mapCodable([String].self).whenComplete { (result) in
-            switch result {
-            case .success(let arr):
-                completionHandler(.success(arr))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
+    func encodedEntry(bucketName: String, key: String = "") -> String {
+        if key.isEmpty {
+            return Base64FS.encodeString(str: "\(bucketName)")
         }
+        return Base64FS.encodeString(str: "\(bucketName):\(key)")
     }
     
-    /// 获取 Bucket 空间域名
-    /// - Parameters:
-    ///   - bucketName: 空间名称
-    ///   - completionHandler: 获取空间名称回调
-    public func bucket(bucketName: String, completionHandler: @escaping (Result<[String], Error>) -> Void) {
-        let task = provider.request(.bucketSpaceDomainName(bucketName))
-        task.mapCodable([String].self).whenComplete { (result) in
-            switch result {
-            case .success(let arr):
-                completionHandler(.success(arr))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    /// 获取账号下所有空间名称列表
+    func buckets() {
+        let string = String(format: "%@/buckets", Configuration.rsHost)
+        let uri = URI(string: string)
+        print(uri.host ?? "")
     }
     
-    
-    /// 创建 Bucket, 空间名称,地区 (空间名称不能有下划线,可以用中划线)
+    /// 创建空间
     /// - Parameters:
     ///   - bucketName: 空间名称
     ///   - region: 地区
-    ///   - completionHandler: 创建空间名称回调
-    public func createBucket(bucketName: String, region: Region, completionHandler: @escaping (Result<String, Error>) -> Void) {
-        let task = provider.request(.createBucket(bucketName, region))
-        task.mapCodable(String.self).whenComplete { (result) in
-            switch result {
-            case .success(let string):
-                completionHandler(.success(string))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    func createBucket(bucketName: String, region: String) {
+        
     }
     
-    /// 删除指定的 Bucket
+    /// 获取该空间下所有的domain
+    /// - Parameter bucketName: 空间名称
+    func domainList(bucketName: String) {
+        
+    }
+    
+    /// 获取空间中文件属性
     /// - Parameters:
     ///   - bucketName: 空间名称
-    ///   - completionHandler: 删除空间名称回调
-    public func deleteBucket(bucketName: String, completionHandler: @escaping (Result<EmptyModel, Error>) -> Void) {
-        let task = provider.request(.deleteBucket(bucketName))
-        task.mapCodable(EmptyModel.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    ///   - fileKey: 文件名称
+    func stat(bucketName: String, fileKey: String) {
+        
     }
     
-    /// 设置 Bucket 访问权限
+    
+    /// 删除指定空间, 指定文件
+    /// - Parameters:
+    ///   - bucket: 空间名称
+    ///   - key: 文件名称
+    func delete(bucket: String, key: String) {
+        
+    }
+    
+    /// 修改文件的MimeType
+    /// - Parameters:
+    ///   - bucket: 空间名称
+    ///   - key: 文件名称
+    ///   - mime: mime类型
+    func changeMime(bucket: String, key: String, mime: String) {
+        
+    }
+    
+    /// 修改文件的元数据
+    /// - Parameters:
+    ///   - bucket: 空间名称
+    ///   - key: 文件名称
+    ///   - headers: 元数据
+    func changeHeaders(bucket: String, key: String, headers: [String: String]) {
+        
+    }
+    
+    /// 修改文件的类型（普通存储或低频存储）
     /// - Parameters:
     ///   - bucketName: 空间名称
-    ///   - access: 权限类型
-    ///   - completionHandler: 设置权限回调
-    public func setBucketAccess(bucketName: String, access: BucketAccess, completionHandler: @escaping (Result<EmptyModel, Error>) -> Void) {
-        let task = provider.request(.setBucketAccess("jingxuetao-hello", .private))
-        task.mapCodable(EmptyModel.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    ///   - key: 文件名称
+    ///   - storageType: 存储类型
+    func changeType(bucketName: String, key: String, storageType: Int) {
+        
     }
     
-    /// 设置空间标签
+    /// 解冻归档存储
     /// - Parameters:
     ///   - bucketName: 空间名称
-    ///   - tags: 标签列表
-    ///   - completionHandler: 设置空间标签回调
-    public func setBucketTags(bucketName: String, tags: [BucketTagModel], completionHandler: @escaping (Result<EmptyModel, Error>) -> Void) {
-        let task = provider.request(.setBucketTags(bucketName, BucketTagsModel(Tags: tags)))
-        task.mapCodable(EmptyModel.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    ///   - key: 文件名称
+    ///   - freezeAfterDays: 解冻有效时长，取值范围 1～7
+    func restoreArchive(bucketName: String, key: String, freezeAfterDays: Int) {
+        
     }
     
-    /// 查询空间标签
+    /// 修改文件的状态（禁用或者正常）
     /// - Parameters:
     ///   - bucketName: 空间名称
-    ///   - completionHandler: 查询空间标签回调
-    public func queryBucketTags(bucketName: String, completionHandler: @escaping (Result<BucketTagsModel, Error>) -> Void) {
-        let task = provider.request(.queryBucketTags(bucketName))
-        task.mapCodable(BucketTagsModel.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    ///   - key: 文件名称
+    ///   - status: 状态, 0表示启用；1表示禁用。
+    func changeStatus(bucketName: String, key: String, status: Int) {
+        
     }
     
-    /// 删除空间标签
+    /// 重命名空间中的文件，可以设置force参数为true强行覆盖空间已有同名文件
     /// - Parameters:
     ///   - bucketName: 空间名称
-    ///   - completionHandler: 删除空间名称回调
-    public func deleteBucketTags(bucketName: String, completionHandler: @escaping (Result<EmptyModel, Error>) -> Void) {
-        let task = provider.request(.deleteBucketTags(bucketName))
-        task.mapCodable(EmptyModel.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    ///   - oldFileKey: 文件名称
+    ///   - newFileKey: 新文件名称
+    ///   - force: 强制覆盖空间中已有同名（和 newFileKey 相同）的文件
+    func rename(bucketName: String, oldFileKey: String, newFileKey: String, force: Bool = false) {
+        
     }
     
-    
-    //MARK: - 文件操作
-    /// 修改文件状态
+    /// 复制文件，要求空间在同一账号下，可以设置force参数为true强行覆盖空间已有同名文件
     /// - Parameters:
-    ///   - bucketName: 空间名称
-    ///   - fileName: 文件名称
-    ///   - status: 文件状态
-    ///   - completionHandler: 修改文件状态回调
-    public func updateFileStatus(bucketName: String, fileName: String, status: FileStatus, completionHandler: @escaping (Result<EmptyModel, Error>) -> Void) {
-        let task = provider.request(.updateFileStatus(bucketName, fileName, status))
-        task.mapCodable(EmptyModel.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    ///   - fromBucket: 源空间名称
+    ///   - fromFileKey: 源文件名称
+    ///   - toBucket: 目的空间名称
+    ///   - toFileKey: 目的文件名称
+    ///   - force: 强制覆盖空间中已有同名（和 toFileKey 相同）的文件
+    func copy(fromBucket: String, fromFileKey: String, toBucket: String, toFileKey: String, force: Bool = false) {
+        
     }
     
-    /// 修改文件存储类型
+    /// 移动文件，要求空间在同一账号下
     /// - Parameters:
-    ///   - bucketName: 空间名称
-    ///   - fileName: 文件名称
-    ///   - type: 存储类型
-    ///   - completionHandler: 修改存储类型回调
-    public func updateFileStoreType(bucketName: String, fileName: String, type: FileStoreType, completionHandler: @escaping (Result<EmptyModel, Error>) -> Void) {
-        let task = provider.request(.updateFileStoreType(bucketName, fileName, type))
-        task.mapCodable(EmptyModel.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    ///   - fromBucket: 源空间名称
+    ///   - fromFileKey: 源文件名称
+    ///   - toBucket: 目的空间名称
+    ///   - toFileKey: 目的文件名称
+    ///   - force: 强制覆盖空间中已有同名（和 toFileKey 相同）的文件
+    func move(fromBucket: String, fromFileKey: String, toBucket: String, toFileKey: String, force: Bool = false) {
+        
     }
     
-    /// 修改文件生命周期 (多少天后被删除)
-    /// - Parameters:
-    ///   - bucketName: 空间名称
-    ///   - fileName: 文件名称
-    ///   - day: 天数
-    ///   - completionHandler: 修改文件声明周期回调
-    public func updateFileLife(bucketName: String, fileName: String, day: Int, completionHandler: @escaping (Result<EmptyModel, Error>) -> Void) {
-        let task = provider.request(.updateFileLife(bucketName, fileName, day))
-        task.mapCodable(EmptyModel.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    func get(url: String) throws {
+        let headers = HTTPHeaders()
+        var request = try HTTPClient.Request(url: url, method: .GET, headers: headers, body: nil)
+        signRequest(request: &request)
     }
     
-    /// 查询文件元信息
-    /// - Parameters:
-    ///   - bucketName: 空间名称
-    ///   - fileName: 文件名称
-    ///   - completionHandler: 查询文件云信息回调
-    public func queryFileMetaInfo(bucketName: String, fileName: String, completionHandler: @escaping (Result<FileInfo, Error>) -> Void) {
-        let task = provider.request(.queryFileMetaInfo(bucketName, fileName))
-        task.mapCodable(FileInfo.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
+    func signRequest( request: inout Request) {
+        let method = request.method
+        let path = request.url.path
+        let query = request.url.query == nil ? "" : "?\(request.url.query ?? "")"
+        let host = request.host
+        let contentType = request.headers["Content-Type"].first ?? ""
+        var signingStr = """
+        \(method) \(path)\(query)
+        Host: \(host)
+        """
+        if !contentType.isEmpty {
+            signingStr.append("\nContent-Type: \(contentType)")
         }
+        signingStr.append("\n\n")
+        print("==========signingStr==========")
+        print(signingStr)
+        print("==========signingStr==========")
+        request.headers.add(name: "Authorization", value: "Qiniu \(Auth.accessToken(signingStr: signingStr))")
+    }
+
+    func test() throws {
+        var headers = HTTPHeaders()
+        headers.add(contentsOf: urlEncodingHeaders)
+        let res = try application.client.get("https://httpbin.org/get", headers: headers).wait()
+        print("============")
+        print(res)
+        print("============")
     }
     
-    /// 文件移动／重命名
-    /// - Parameters:
-    ///   - fromBucket: 从空间名称
-    ///   - fromFile: 从文件名称
-    ///   - toBucket: 到空间名称
-    ///   - toFile: 到文件名称
-    ///   - force: 是否强制移动
-    ///   - completionHandler: 文件移动/重命名回调
-    public func renameFile(fromBucket: String, fromFile: String, toBucket: String, toFile: String, force: Bool, completionHandler: @escaping (Result<FileInfo, Error>) -> Void) {
-        let task = provider.request(.renameFile(fromBucket, fromFile, toBucket, toFile, force))
-        task.mapCodable(FileInfo.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    var urlEncodingHeaders: [(String, String)] {
+        return [
+            ("User-Agent", "QiNiuSDK"),
+            ("Content-Type", "application/x-www-form-urlencoded")
+        ]
     }
     
-    /// 文件复制
-    /// - Parameters:
-    ///   - fromBucket: 从空间名称
-    ///   - fromFile: 从文件名称
-    ///   - toBucket: 到空间名称
-    ///   - toFile: 到文件名称
-    ///   - force: 是否强制复制
-    ///   - completionHandler: 文件移动/重命名回调
-    public func copyFile(fromBucket: String, fromFile: String, toBucket: String, toFile: String, force: Bool, completionHandler: @escaping (Result<FileInfo, Error>) -> Void) {
-        let task = provider.request(.copyFile(fromBucket, fromFile, toBucket, toFile, force))
-        task.mapCodable(FileInfo.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    var jsonEncodingHeaders: [(String, String)] {
+        return [
+            ("User-Agent", "QiNiuSDK"),
+            ("Content-Type", "application/json")
+        ]
     }
     
-    /// 资源删除
-    /// - Parameters:
-    ///   - bucketName: 空间名称
-    ///   - fileName: 文件名称
-    ///   - completionHandler: 资源删除回调
-    public func deleteFile(bucketName: String, fileName: String, completionHandler: @escaping (Result<EmptyModel, Error>) -> Void) {
-        let task = provider.request(.deleteFile(bucketName, fileName))
-        task.mapCodable(EmptyModel.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
-    }
-    
-    /// 资源列举
-    /// - Parameters:
-    ///   - bucketName: 空间名称
-    ///   - marker: 上一次列举返回的位置标记，作为本次列举的起点信息。默认值为空字符串。
-    ///   - limit: 本次列举的条目数，范围为1-1000。默认值为1000。
-    ///   - prefix: 指定前缀，只有资源名匹配该前缀的资源会被列出。默认值为空字符串。
-    ///   - deimiter: 指定目录分隔符，列出所有公共前缀（模拟列出目录效果）。默认值为空字符串。
-    ///   - completionHandler: 资源列举回调
-    public func querySource(bucketName: String, marker: String, limit: String, prefix: String, deimiter: String, completionHandler: @escaping (Result<QuerySource, Error>) -> Void) {
-        let task = provider.request(.querySource(bucketName, marker, limit, prefix, deimiter))
-        task.mapCodable(QuerySource.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
-    }
-    
-    /// 资源批量列举
-    /// - Parameters:
-    ///   - bucketName: 空间名称
-    ///   - fileNames: 文件名称
-    ///   - completionHandler: 批量列举回调
-    public func batchFileMetaInfo(models: [BatchModel], completionHandler: @escaping (Result<QuerySource, Error>) -> Void) {
-        let task = provider.request(.batchFileMetaInfo(models))
-        task.mapCodable(QuerySource.self).whenComplete { (result) in
-            switch result {
-            case .success(let model):
-                completionHandler(.success(model))
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
+    var formDataHeaders: [(String, String)] {
+        return [
+            ("User-Agent", "QiNiuSDK"),
+            ("Content-Type", "multipart/form-data")
+        ]
     }
 }

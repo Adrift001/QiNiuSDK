@@ -27,6 +27,10 @@ final class BucketTests1: BaseTestCase {
         try app.qiniu.test()
     }
     
+    func testBuckets() {
+        try app.qiniu.buckets()
+    }
+    
     override func tearDown() {
         super.tearDown()
         app.shutdown()
