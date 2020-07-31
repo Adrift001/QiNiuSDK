@@ -359,19 +359,5 @@ final class BucketTests: BaseTestCase {
         waitForExpectations(timeout: timeout, handler: nil)
         XCTAssertNil(error)
     }
-    
-    func testUpload2() {
-        let body: HTTPClient.Body = .stream(length: 8) { writer in
-            let buffer = ByteBuffer(string: "1234")
-            return writer.write(.byteBuffer(buffer)).flatMap {
-                let buffer = ByteBuffer(string: "4321")
-                return writer.write(.byteBuffer(buffer))
-            }
-        }
-
-        let response = try self.defaultClient.post(url: self.defaultHTTPBinURLPrefix + "post", body: body).wait()
-        let bytes = response.body.flatMap { $0.getData(at: 0, length: $0.readableBytes) }
-        let data = try JSONDecoder().decode(RequestInfo.self, from: bytes!)
-    }
 }
 

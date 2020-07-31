@@ -14,15 +14,13 @@ let package = Package(
             targets: ["QiNiuSDK"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-server/async-http-client.git", from: "1.1.1"),
-        .package(url: "https://github.com/apple/swift-crypto.git", from: "1.0.2"),
+        .package(url: "https://github.com/vapor/vapor.git", from: "4.27.1")
     ],
     targets: [
         .target(
             name: "QiNiuSDK",
             dependencies: [
-                .product(name: "AsyncHTTPClient", package: "async-http-client"),
-                .product(name: "Crypto", package: "swift-crypto"),
+                .product(name: "Vapor", package: "vapor"),
             ]),
         .testTarget(
             name: "QiNiuSDKTests",
