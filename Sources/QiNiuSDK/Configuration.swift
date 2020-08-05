@@ -9,9 +9,9 @@ import Foundation
 
 struct Configuration {
     
-    public static rsHost = "https://rs.qiniu.com"
-    public static apiHost = "https://api.qiniu.com"
-    public static ucHost = "https://uc.qbox.me"
+    public static let rsHost = "https://rs.qiniu.com"
+    public static let apiHost = "https://api.qiniu.com"
+    public static let ucHost = "https://uc.qbox.me"
     
     
 }

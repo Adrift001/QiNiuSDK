@@ -11,23 +11,20 @@ import XCTest
 
 final class BucketTests1: BaseTestCase {
     
-    
     var env: Environment!
     var app: Application!
     
     override func setUp() {
         super.setUp()
+        let environment = ProcessInfo.processInfo.environment
+        Keys.accessKey = environment["AK"] ?? ""
+        Keys.secretKey = environment["SK"] ?? ""
         env = try! Environment.detect()
         try! LoggingSystem.bootstrap(from: &env)
         app = Application(env)
     }
-
     
-    func test() throws {
-        try app.qiniu.test()
-    }
-    
-    func testBuckets() {
+    func testBuckets() throws {
         try app.qiniu.buckets()
     }
     

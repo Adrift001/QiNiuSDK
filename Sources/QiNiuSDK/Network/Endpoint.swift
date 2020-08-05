@@ -5,9 +5,11 @@
 //  Created by 荆学涛 on 2019/8/18.
 //
 
+import Vapor
+
 public class Endpoint {
     /// A string representation of the URL for the request.
-    public let url: String
+    public let url: URI
 
     /// The HTTP method for the request.
     public let method: HTTPMethod
@@ -20,7 +22,7 @@ public class Endpoint {
     
     public let body: Data?
         
-    public init(url: String,
+    public init(url: URI,
                 method: HTTPMethod,
                 task: Task,
                 httpHeaderFields: [String: String]?,
@@ -59,15 +61,16 @@ extension Endpoint {
     }
     
     public func urlRequest() throws -> Request {
-        guard let requestURL = URL(string: url) else {
-            throw QiNiuError.requestMapping(url)
-        }
+//        guard let requestURL = URL(string: url) else {
+//            throw QiNiuError.requestMapping(url)
+//        }
         var headers = HTTPHeaders()
         if let dic = httpHeaderFields {
             for (key, value) in dic {
                 headers.add(name: key, value: value)
             }
         }
+        let requestURL = URL(string: "")!
         var request = try Request(url: requestURL, method: method, headers: headers, body: nil)
         
         switch task {

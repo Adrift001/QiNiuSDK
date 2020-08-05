@@ -11,6 +11,16 @@ public struct QiNiuSDK {
     
     public let application: Application
     
+    func defaultEndpoint(for target: BucketProvider) -> Endpoint {
+        return Endpoint(
+            url: URI(target: target),
+            method: target.method,
+            task: target.task,
+            httpHeaderFields: target.headers,
+            body: target.body
+        )
+    }
+    
     func encodedEntry(bucketName: String, key: String = "") -> String {
         if key.isEmpty {
             return Base64FS.encodeString(str: "\(bucketName)")
@@ -19,10 +29,28 @@ public struct QiNiuSDK {
     }
     
     /// 获取账号下所有空间名称列表
-    func buckets() {
-        let string = String(format: "%@/buckets", Configuration.rsHost)
-        let uri = URI(string: string)
-        print(uri.host ?? "")
+    func buckets() throws {
+        
+//        var headers = HTTPHeaders()
+//        headers.add(contentsOf: urlEncodingHeaders)
+//        let res = try application.client.get("https://httpbin.org/get", headers: headers).wait()
+        
+//        let string = String(format: "%@/buckets", Configuration.rsHost)
+//        let uri = URI(string: string)
+//        print(uri.host ?? "")
+        
+        let endpoint = defaultEndpoint(for: .buckets)
+        signRequest(endpoint: endpoint)
+        var headers = HTTPHeaders()
+        if let httpHeaderFields = endpoint.httpHeaderFields {
+            for (key, value) in httpHeaderFields {
+                headers.add(name: key, value: value)
+            }
+        }
+        print(headers)
+        let res = try application.client.get(endpoint.url, headers: headers).wait()
+        print(res)
+    
     }
     
     /// 创建空间
@@ -133,18 +161,12 @@ public struct QiNiuSDK {
         
     }
     
-    func get(url: String) throws {
-        let headers = HTTPHeaders()
-        var request = try HTTPClient.Request(url: url, method: .GET, headers: headers, body: nil)
-        signRequest(request: &request)
-    }
-    
-    func signRequest( request: inout Request) {
-        let method = request.method
-        let path = request.url.path
-        let query = request.url.query == nil ? "" : "?\(request.url.query ?? "")"
-        let host = request.host
-        let contentType = request.headers["Content-Type"].first ?? ""
+    func signRequest(endpoint: Endpoint) {
+        let method = endpoint.method
+        let path = endpoint.url.path
+        let query = endpoint.url.query == nil ? "" : "?\(endpoint.url.query ?? "")"
+        let host = endpoint.url.host ?? ""
+        let contentType = endpoint.httpHeaderFields?["Content-Type"] ?? ""
         var signingStr = """
         \(method) \(path)\(query)
         Host: \(host)
@@ -156,7 +178,7 @@ public struct QiNiuSDK {
         print("==========signingStr==========")
         print(signingStr)
         print("==========signingStr==========")
-        request.headers.add(name: "Authorization", value: "Qiniu \(Auth.accessToken(signingStr: signingStr))")
+        endpoint.httpHeaderFields?["Authorization"] = "Qiniu \(Auth.accessToken(signingStr: signingStr))"
     }
 
     func test() throws {

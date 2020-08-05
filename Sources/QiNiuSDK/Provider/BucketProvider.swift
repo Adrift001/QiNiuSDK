@@ -62,23 +62,23 @@ public enum BucketProvider {
 }
 
 extension BucketProvider: TargetType {
-    
-    public var baseURL: URL {
+
+    public var baseURL: URI {
         switch self {
         case .buckets, .updateFileStatus, .updateFileMetaInfo, .batchFileMetaInfo:
-            return URL(string: "https://rs.qbox.me/")!
+            return URI(string: "https://rs.qbox.me/")
         case .bucketSpaceDomainName:
-            return URL(string: "https://api.qiniu.com/")!
+            return URI(string: "https://api.qiniu.com/")
         case .createBucket, .deleteBucket, .updateFileStoreType, .updateFileLife, .queryFileMetaInfo, .renameFile, .copyFile, .deleteFile:
-            return URL(string: "https://rs.qiniu.com")!
+            return URI(string: "https://rs.qiniu.com")
         case .setBucketAccess, .setBucketTags, .queryBucketTags, .deleteBucketTags:
-            return URL(string: "https://uc.qbox.me")!
+            return URI(string: "https://uc.qbox.me")
         case .prefetchFile:
-            return URL(string: "https://iovip.qbox.me")!
+            return URI(string: "https://iovip.qbox.me")
         case .querySource:
-            return URL(string: "https://rsf.qbox.me")!
+            return URI(string: "https://rsf.qbox.me")
         case .upload(let url,_,_,_,_):
-            return URL(string: url.rawValue)!
+            return URI(string: url.rawValue)
         }
     }
     
@@ -137,9 +137,9 @@ extension BucketProvider: TargetType {
     
     public var method: HTTPMethod {
         switch self {
-        case .buckets, .createBucket, .deleteBucket, .setBucketAccess, .updateFileStatus, .queryFileMetaInfo, .updateFileLife, .updateFileStoreType, .updateFileMetaInfo, .deleteFile, .renameFile, .copyFile, .prefetchFile, .batchFileMetaInfo, .upload:
+        case .createBucket, .deleteBucket, .setBucketAccess, .updateFileStatus, .queryFileMetaInfo, .updateFileLife, .updateFileStoreType, .updateFileMetaInfo, .deleteFile, .renameFile, .copyFile, .prefetchFile, .batchFileMetaInfo, .upload:
             return .POST
-        case .bucketSpaceDomainName, .queryBucketTags, .querySource:
+        case .buckets, .bucketSpaceDomainName, .queryBucketTags, .querySource:
             return .GET
         case .setBucketTags:
             return .PUT
