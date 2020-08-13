@@ -22,6 +22,6 @@ public extension URI {
         print(self.string)
         print(path)
         print("==========appendingPathComponent=============")
-        return URI(path: "\(self.string)\(path)")
+        return URI(scheme: scheme, host: host, path: path, query: query)
     }
 }

@@ -24,8 +24,26 @@ final class BucketTests1: BaseTestCase {
         app = Application(env)
     }
     
+    func testPath() {
+        let uri = URI(string: "https://www.baidu.com/hello")
+        let result = uri.appendingPathComponent("world")
+        print(result.path)
+    }
+    
     func testBuckets() throws {
         try app.qiniu.buckets()
+    }
+    
+    func testCreateBucket() throws {
+        try app.qiniu.createBucket(bucketName: "jingxuetao-hello", region: Region.z0)
+    }
+    
+    func testDomainList() throws {
+        try app.qiniu.domainList(bucketName: "jingxuetao-hello")
+    }
+    
+    func testStat() throws {
+        try app.qiniu.stat(bucketName: "jingxuetao-hello", fileKey: "11222.jpg")
     }
     
     override func tearDown() {

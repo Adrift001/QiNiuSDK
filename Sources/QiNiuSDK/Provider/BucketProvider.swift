@@ -65,11 +65,11 @@ extension BucketProvider: TargetType {
 
     public var baseURL: URI {
         switch self {
-        case .buckets, .updateFileStatus, .updateFileMetaInfo, .batchFileMetaInfo:
+        case .buckets, .updateFileStatus, .updateFileMetaInfo, .batchFileMetaInfo, .createBucket:
             return URI(string: "https://rs.qbox.me/")
         case .bucketSpaceDomainName:
             return URI(string: "https://api.qiniu.com/")
-        case .createBucket, .deleteBucket, .updateFileStoreType, .updateFileLife, .queryFileMetaInfo, .renameFile, .copyFile, .deleteFile:
+        case .deleteBucket, .updateFileStoreType, .updateFileLife, .queryFileMetaInfo, .renameFile, .copyFile, .deleteFile:
             return URI(string: "https://rs.qiniu.com")
         case .setBucketAccess, .setBucketTags, .queryBucketTags, .deleteBucketTags:
             return URI(string: "https://uc.qbox.me")
@@ -204,7 +204,7 @@ extension BucketProvider: TargetType {
         }
     }
     
-    public var headers: [String : String]? {
+    public var headers: HTTPHeaders {
         switch self {
         case .setBucketTags:
             return jsonEncodingHeaders()
@@ -217,24 +217,27 @@ extension BucketProvider: TargetType {
 }
 
 extension BucketProvider {
-    func urlEncodingHeaders() -> [String: String] {
-        return [
-            "User-Agent": "QiNiuSDK",
-            "Content-Type": "application/x-www-form-urlencoded"
-        ]
+    func urlEncodingHeaders() -> HTTPHeaders {
+        let headers = HTTPHeaders([
+            ("User-Agent", "QiNiuSDK"),
+            ("Content-Type", "application/x-www-form-urlencoded")
+        ])
+        return headers
     }
     
-    func jsonEncodingHeaders() -> [String: String] {
-        return [
-            "User-Agent": "QiNiuSDK",
-            "Content-Type": "application/json"
-        ]
+    func jsonEncodingHeaders() -> HTTPHeaders {
+        let headers = HTTPHeaders([
+            ("User-Agent", "QiNiuSDK"),
+            ("Content-Type", "application/json")
+        ])
+        return headers
     }
     
-    func formDataHeaders() -> [String: String] {
-        return [
-            "User-Agent": "QiNiuSDK",
-            "Content-Type": "multipart/form-data"
-        ]
+    func formDataHeaders() -> HTTPHeaders {
+        let headers = HTTPHeaders([
+            ("User-Agent", "QiNiuSDK"),
+            ("Content-Type", "multipart/form-data")
+        ])
+        return headers
     }
 }

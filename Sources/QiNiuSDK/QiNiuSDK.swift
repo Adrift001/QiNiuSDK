@@ -12,13 +12,30 @@ public struct QiNiuSDK {
     public let application: Application
     
     func defaultEndpoint(for target: BucketProvider) -> Endpoint {
-        return Endpoint(
+        let point = Endpoint(
             url: URI(target: target),
             method: target.method,
             task: target.task,
-            httpHeaderFields: target.headers,
+            headers: target.headers,
             body: target.body
         )
+        signRequest(endpoint: point)
+        return point
+    }
+    
+    func defaultEventLoopFuture(_ endpoint: Endpoint) -> EventLoopFuture<ClientResponse> {
+        switch endpoint.method {
+        case .GET:
+            return application.client.get(endpoint)
+        case .POST:
+            return application.client.post(endpoint)
+        case .PUT:
+            return application.client.put(endpoint)
+        case .DELETE:
+            return application.client.delete(endpoint)
+        default:
+            return application.client.get(endpoint)
+        }
     }
     
     func encodedEntry(bucketName: String, key: String = "") -> String {
@@ -30,58 +47,56 @@ public struct QiNiuSDK {
     
     /// 获取账号下所有空间名称列表
     func buckets() throws {
-        
-//        var headers = HTTPHeaders()
-//        headers.add(contentsOf: urlEncodingHeaders)
-//        let res = try application.client.get("https://httpbin.org/get", headers: headers).wait()
-        
-//        let string = String(format: "%@/buckets", Configuration.rsHost)
-//        let uri = URI(string: string)
-//        print(uri.host ?? "")
-        
         let endpoint = defaultEndpoint(for: .buckets)
-        signRequest(endpoint: endpoint)
-        var headers = HTTPHeaders()
-        if let httpHeaderFields = endpoint.httpHeaderFields {
-            for (key, value) in httpHeaderFields {
-                headers.add(name: key, value: value)
-            }
-        }
-        print(headers)
-        let res = try application.client.get(endpoint.url, headers: headers).wait()
+        let res = try defaultEventLoopFuture(endpoint).wait()
         print(res)
-    
     }
     
     /// 创建空间
     /// - Parameters:
     ///   - bucketName: 空间名称
     ///   - region: 地区
-    func createBucket(bucketName: String, region: String) {
-        
+    func createBucket(bucketName: String, region: Region) throws {
+        let endpoint = defaultEndpoint(for: .createBucket(bucketName, region))
+        let res = try defaultEventLoopFuture(endpoint).wait()
+        print(res)
+    }
+    
+    /// 删除空间
+    /// - Parameter bucketName: 空间名称
+    func deleteBucket(bucketName: String) throws {
+        let endpoint = defaultEndpoint(for: .deleteBucket(bucketName))
+        let res = try defaultEventLoopFuture(endpoint).wait()
+        print(res)
     }
     
     /// 获取该空间下所有的domain
     /// - Parameter bucketName: 空间名称
-    func domainList(bucketName: String) {
-        
+    func domainList(bucketName: String) throws  {
+        let endpoint = defaultEndpoint(for: .bucketSpaceDomainName(bucketName))
+        let res = try defaultEventLoopFuture(endpoint).wait()
+        print(res)
     }
     
     /// 获取空间中文件属性
     /// - Parameters:
     ///   - bucketName: 空间名称
     ///   - fileKey: 文件名称
-    func stat(bucketName: String, fileKey: String) {
-        
+    func stat(bucketName: String, fileKey: String) throws {
+        let endpoint = defaultEndpoint(for: .queryFileMetaInfo(bucketName, fileKey))
+        let res = try defaultEventLoopFuture(endpoint).wait()
+        print(res)
     }
     
     
-    /// 删除指定空间, 指定文件
+    /// 删除指定空间的指定文件
     /// - Parameters:
     ///   - bucket: 空间名称
     ///   - key: 文件名称
-    func delete(bucket: String, key: String) {
-        
+    func deleteFile(bucketName: String, key: String) throws {
+        let endpoint = defaultEndpoint(for: .deleteFile(bucketName, key))
+        let res = try defaultEventLoopFuture(endpoint).wait()
+        print(res)
     }
     
     /// 修改文件的MimeType
@@ -89,7 +104,7 @@ public struct QiNiuSDK {
     ///   - bucket: 空间名称
     ///   - key: 文件名称
     ///   - mime: mime类型
-    func changeMime(bucket: String, key: String, mime: String) {
+    func changeMime(bucket: String, key: String, mime: String) throws {
         
     }
     
@@ -98,7 +113,7 @@ public struct QiNiuSDK {
     ///   - bucket: 空间名称
     ///   - key: 文件名称
     ///   - headers: 元数据
-    func changeHeaders(bucket: String, key: String, headers: [String: String]) {
+    func changeHeaders(bucket: String, key: String, headers: [String: String]) throws {
         
     }
     
@@ -107,7 +122,7 @@ public struct QiNiuSDK {
     ///   - bucketName: 空间名称
     ///   - key: 文件名称
     ///   - storageType: 存储类型
-    func changeType(bucketName: String, key: String, storageType: Int) {
+    func changeType(bucketName: String, key: String, storageType: Int) throws {
         
     }
     
@@ -116,7 +131,7 @@ public struct QiNiuSDK {
     ///   - bucketName: 空间名称
     ///   - key: 文件名称
     ///   - freezeAfterDays: 解冻有效时长，取值范围 1～7
-    func restoreArchive(bucketName: String, key: String, freezeAfterDays: Int) {
+    func restoreArchive(bucketName: String, key: String, freezeAfterDays: Int) throws {
         
     }
     
@@ -125,7 +140,7 @@ public struct QiNiuSDK {
     ///   - bucketName: 空间名称
     ///   - key: 文件名称
     ///   - status: 状态, 0表示启用；1表示禁用。
-    func changeStatus(bucketName: String, key: String, status: Int) {
+    func changeStatus(bucketName: String, key: String, status: Int) throws {
         
     }
     
@@ -135,7 +150,7 @@ public struct QiNiuSDK {
     ///   - oldFileKey: 文件名称
     ///   - newFileKey: 新文件名称
     ///   - force: 强制覆盖空间中已有同名（和 newFileKey 相同）的文件
-    func rename(bucketName: String, oldFileKey: String, newFileKey: String, force: Bool = false) {
+    func rename(bucketName: String, oldFileKey: String, newFileKey: String, force: Bool = false) throws {
         
     }
     
@@ -146,7 +161,7 @@ public struct QiNiuSDK {
     ///   - toBucket: 目的空间名称
     ///   - toFileKey: 目的文件名称
     ///   - force: 强制覆盖空间中已有同名（和 toFileKey 相同）的文件
-    func copy(fromBucket: String, fromFileKey: String, toBucket: String, toFileKey: String, force: Bool = false) {
+    func copy(fromBucket: String, fromFileKey: String, toBucket: String, toFileKey: String, force: Bool = false) throws {
         
     }
     
@@ -157,16 +172,16 @@ public struct QiNiuSDK {
     ///   - toBucket: 目的空间名称
     ///   - toFileKey: 目的文件名称
     ///   - force: 强制覆盖空间中已有同名（和 toFileKey 相同）的文件
-    func move(fromBucket: String, fromFileKey: String, toBucket: String, toFileKey: String, force: Bool = false) {
+    func move(fromBucket: String, fromFileKey: String, toBucket: String, toFileKey: String, force: Bool = false) throws {
         
     }
     
     func signRequest(endpoint: Endpoint) {
         let method = endpoint.method
-        let path = endpoint.url.path
-        let query = endpoint.url.query == nil ? "" : "?\(endpoint.url.query ?? "")"
-        let host = endpoint.url.host ?? ""
-        let contentType = endpoint.httpHeaderFields?["Content-Type"] ?? ""
+        let path = endpoint.uri.path
+        let query = endpoint.uri.query == nil ? "" : "?\(endpoint.uri.query ?? "")"
+        let host = endpoint.uri.host ?? ""
+        let contentType = endpoint.headers["Content-Type"].first ?? ""
         var signingStr = """
         \(method) \(path)\(query)
         Host: \(host)
@@ -178,7 +193,11 @@ public struct QiNiuSDK {
         print("==========signingStr==========")
         print(signingStr)
         print("==========signingStr==========")
-        endpoint.httpHeaderFields?["Authorization"] = "Qiniu \(Auth.accessToken(signingStr: signingStr))"
+        endpoint.headers.add(name: "Authorization", value: "Qiniu \(Auth.accessToken(signingStr: signingStr))")
+    
+        print("===========headers===========")
+        print(endpoint.headers)
+        print("===========headers===========")
     }
 
     func test() throws {
