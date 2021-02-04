@@ -5,7 +5,7 @@
 //  Created by 荆学涛 on 2019/11/18.
 //
 
-public class ResourceMetaInfo: Codable {
+public struct ResourceMetaInfo: Codable {
     var bucketName: String
     var fileName: String
     var mimeType: String
@@ -58,7 +58,7 @@ public class ResourceMetaInfo: Codable {
     }
 }
 
-public class ResourceMetaInfoCond: Codable {
+public struct ResourceMetaInfoCond: Codable {
     var hash = ""
     var mime = ""
     var fsize = 0

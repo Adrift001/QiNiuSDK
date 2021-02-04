@@ -45,47 +45,61 @@ public struct QiNiuSDK {
         return Base64FS.encodeString(str: "\(bucketName):\(key)")
     }
     
+    func handle<T: Codable>(response: ClientResponse) throws -> ResponseModel<T> {
+        #if DEBUG
+        print(response)
+        #endif
+        let code = response.status.code
+        if code == 200 {
+            let data = try response.content.decode(T.self)
+            return ResponseModel(code: code, data: data)
+        } else {
+            let data = try response.content.decode(ErrorModel.self)
+            return ResponseModel(code: code, error: data.error, errorCode: data.errorCode)
+        }
+    }
+    
     /// 获取账号下所有空间名称列表
-    func buckets() throws {
+    func buckets() throws -> ResponseModel<[String]> {
         let endpoint = defaultEndpoint(for: .buckets)
         let res = try defaultEventLoopFuture(endpoint).wait()
-        print(res)
+        return try handle(response: res)
     }
     
     /// 创建空间
     /// - Parameters:
     ///   - bucketName: 空间名称
     ///   - region: 地区
-    func createBucket(bucketName: String, region: Region) throws {
+    func createBucket(bucketName: String, region: Region) throws -> ResponseModel<EmptyModel> {
         let endpoint = defaultEndpoint(for: .createBucket(bucketName, region))
         let res = try defaultEventLoopFuture(endpoint).wait()
-        print(res)
+        return try handle(response: res)
     }
     
     /// 删除空间
     /// - Parameter bucketName: 空间名称
-    func deleteBucket(bucketName: String) throws {
+    func deleteBucket(bucketName: String) throws -> ResponseModel<EmptyModel> {
         let endpoint = defaultEndpoint(for: .deleteBucket(bucketName))
         let res = try defaultEventLoopFuture(endpoint).wait()
-        print(res)
+        return try handle(response: res)
     }
     
     /// 获取该空间下所有的domain
     /// - Parameter bucketName: 空间名称
-    func domainList(bucketName: String) throws  {
+    func domainList(bucketName: String) throws -> ResponseModel<[String]>  {
         let endpoint = defaultEndpoint(for: .bucketSpaceDomainName(bucketName))
         let res = try defaultEventLoopFuture(endpoint).wait()
-        print(res)
+        return try handle(response: res)
     }
     
     /// 获取空间中文件属性
     /// - Parameters:
     ///   - bucketName: 空间名称
     ///   - fileKey: 文件名称
-    func stat(bucketName: String, fileKey: String) throws {
+    func stat(bucketName: String, fileKey: String) throws -> ResponseModel<StatModel> {
         let endpoint = defaultEndpoint(for: .queryFileMetaInfo(bucketName, fileKey))
         let res = try defaultEventLoopFuture(endpoint).wait()
-        print(res)
+        return try handle(response: res)
     }
     
     

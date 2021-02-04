@@ -5,7 +5,7 @@
 //  Created by 荆学涛 on 2019/11/18.
 //
 
-public class UpdateFileMetaModel {
+public struct UpdateFileMetaModel {
     var bucketName = ""
     var fileName = ""
     var mimeType = ""

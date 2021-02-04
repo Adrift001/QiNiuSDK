@@ -8,8 +8,16 @@
 import Foundation
 
 public class ErrorModel: Codable {
-    var error = ""
-    init(error: String) {
+    var error: String
+    var errorCode: String?
+    init(error: String, errorCode: String?) {
         self.error = error
+        self.errorCode = errorCode
     }
+    
+    enum CodingKeys: String, CodingKey {
+        case error
+        case errorCode = "error_code"
+    }
+    
 }
